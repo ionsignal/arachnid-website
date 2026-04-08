@@ -1,0 +1,15 @@
+---
+import * as LucideIcons from "@lucide/astro";
+interface Props {
+  icon: string;
+  class?: string;
+  [key: string]: any;
+}
+const { icon, class: className, ...restProps } = Astro.props;
+const IconComponent = LucideIcons[icon as keyof typeof LucideIcons] as any;
+if (!IconComponent && import.meta.env.DEV) {
+  console.warn(`[Icons.astro] Lucide icon "${icon}" not found.`);
+}
+---
+
+{IconComponent ? <IconComponent class={className} {...restProps} /> : null}

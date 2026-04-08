@@ -1,0 +1,109 @@
+---
+import Logo from "@/components/global/Logo.astro";
+import config from ".astro/config.generated.json" with { type: "json" };
+import NavigationButton from "@/components/global/header/NavigationButton.astro";
+import NavMenuItem from "@/components/global/header/MenuItem.astro";
+import NavToggleBtn from "@/components/global/header/NavToggleBtn.astro";
+import { useTranslations, sortByWeight, filteredEnabled } from "@/utils/core";
+import type { NavigationLink } from "@/types";
+
+const t = useTranslations();
+let main = t("main");
+main = filteredEnabled(main);
+main = sortByWeight(main) as NavigationLink[];
+const {
+  site: { logoHoverAnimation },
+  settings: { stickyHeader, navigationButton },
+} = config;
+---
+
+<header
+  class:list={[
+    "header group/header mt-5 transform",
+    { "sticky-header": stickyHeader },
+  ]}>
+  <div class="relative container">
+    <nav class="relative flex items-center justify-between px-2 py-2.5">
+      <Logo class={logoHoverAnimation ? "has-hover-animation" : ""} />
+      <div
+        id="nav-menu"
+        class="hs-collapse hidden grow basis-full overflow-hidden transition-all duration-300 max-lg:absolute max-lg:top-full max-lg:left-0 max-lg:z-40 max-lg:w-full lg:block lg:w-auto lg:basis-auto">
+        <ul class="navbar has-customized-scrollbar">
+          {main.map((menu) => <NavMenuItem menu={menu} />)}
+          {
+            navigationButton.enable && (
+              <li class="max-lg:px-4 max-lg:py-2 lg:hidden" role="menuitem">
+                {navigationButton.enable && (
+                  <NavigationButton
+                    navigationButton={navigationButton}
+                    navigationbuttonLabel={t("navigation.buttonLabel")}
+                  />
+                )}
+              </li>
+            )
+          }
+        </ul>
+      </div>
+      {
+        navigationButton.enable && (
+          <div class="hidden gap-3.5 max-lg:me-4 max-lg:ml-auto lg:flex lg:items-center">
+            {navigationButton.enable && (
+              <NavigationButton
+                navigationButton={navigationButton}
+                navigationbuttonLabel={t("navigation.buttonLabel")}
+              />
+            )}
+          </div>
+        )
+      }
+      <NavToggleBtn />
+    </nav>
+  </div>
+</header>
+<script>
+  function stickyHeader(): void {
+    const header = document.querySelector(
+      ".sticky-header",
+    ) as HTMLElement | null;
+    if (!header) return; // Early exit if no header is found
+    let prevScrollPos = window.scrollY;
+    if (prevScrollPos > 0) {
+      header.classList.add("scroll-up");
+    }
+    window.addEventListener("scroll", () => {
+      const currentScrollPos = window.scrollY;
+      if (prevScrollPos > currentScrollPos) {
+        // Scrolling up
+        header.classList.remove("scroll-down");
+        header.classList.add("scroll-up");
+      } else if (prevScrollPos < currentScrollPos) {
+        // Scrolling down
+        header.classList.remove("scroll-up");
+        header.classList.add("scroll-down");
+      }
+      if (currentScrollPos === 0) {
+        header.classList.remove("scroll-up");
+        header.classList.remove("scroll-down");
+      }
+      prevScrollPos = currentScrollPos;
+    });
+  }
+  stickyHeader();
+
+  document.addEventListener("click", (event: MouseEvent) => {
+    const navMenu = document.getElementById("nav-menu");
+    const navToggler = document.querySelector(
+      ".nav-toggler",
+    ) as HTMLElement | null;
+    if (navMenu && navMenu.classList.contains("open")) {
+      const target = event.target as Node;
+      if (
+        !navMenu.contains(target) &&
+        navToggler &&
+        !navToggler.contains(target)
+      ) {
+        navToggler.click();
+      }
+    }
+  });
+</script>

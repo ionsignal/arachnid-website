@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"svg"> {
+  icon: string;
+  class?: string;
+}
+
+const { icon, class: className, ...rest } = Astro.props;
+const svgFiles = import.meta.glob("/src/assets/images/icons/**/*.svg", {
+  query: "?raw",
+  import: "default",
+});
+const expectedPath = `/src/assets/images/icons/${icon}.svg`;
+let svgContent = "";
+if (expectedPath in svgFiles) {
+  svgContent = (await svgFiles[expectedPath]()) as string;
+} else if (import.meta.env.DEV) {
+  console.warn(`[SvgIcon.astro] Icon not found: ${expectedPath}`);
+}
+if (svgContent) {
+  const attributes = Object.entries(rest)
+    .map(([key, value]) => `${key}="${value}"`)
+    .join(" ");
+  const classInjection = className ? `class="${className}"` : "";
+  svgContent = svgContent.replace(
+    /^<svg/,
+    `<svg ${classInjection} ${attributes} data-icon="${icon}"`,
+  );
+}
+---
+
+{svgContent ? <Fragment set:html={svgContent} /> : null}

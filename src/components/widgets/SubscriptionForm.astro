@@ -1,0 +1,141 @@
+---
+import { useTranslations } from "@/utils/core";
+import LucideIcon from "@/components/helpers/LucideIcon.astro";
+
+interface Props {
+  formAction?: string;
+  layout?: "hero" | "footer";
+  idSuffix?: string;
+  [key: string]: any;
+}
+
+const t = useTranslations();
+const { formAction, layout = "footer", idSuffix = "footer" } = Astro.props;
+const isHero = layout === "hero";
+---
+
+<form
+  action={formAction}
+  id={`mc-embedded-subscribe-form-${idSuffix}`}
+  method="post"
+  class:list={[
+    "subscribe-form relative",
+    isHero ? "mx-auto w-full max-w-md lg:mx-0" : "",
+  ]}>
+  <label for={`mce-EMAIL-${idSuffix}`} class="sr-only">Email</label>
+  <input
+    required
+    type="email"
+    name="EMAIL"
+    id={`mce-EMAIL-${idSuffix}`}
+    aria-required="true"
+    placeholder={t("common.emailPlaceholder")}
+    class:list={[
+      "border-primary/80 focus:ring-primary/15 size-full rounded-full py-4 pl-5 shadow-none outline-0 transition-all duration-300 focus:ring-4",
+      isHero
+        ? "border-2 bg-white/10 text-white backdrop-blur-sm placeholder:text-white/80"
+        : "bg-white/5 placeholder:text-white placeholder:opacity-90",
+    ]}
+  />
+  <button
+    type="submit"
+    name="subscribe"
+    id={`mc-embedded-subscribe-${idSuffix}`}
+    class="bg-primary/10 border-primary/40 shadow-[0_0_15px_--theme(--color-primary/20%)] hover:bg-primary/25 hover:border-primary/80 hover:shadow-[0_0_25px_--theme(--color-primary/40%)] has-icon-moving-animation absolute top-1 right-1 flex h-[calc(100%-0.5rem)] w-24 items-center justify-center rounded-full border backdrop-blur-md transition-all duration-300">
+    <span class="sr-only">Subscribe</span>
+    <span
+      class="icons-wrapper inline-flex h-10 w-10 items-center justify-center">
+      <span class="icon icon-before flex items-center justify-center">
+        <LucideIcon icon="ArrowUpRight" class="h-6 w-6 text-white" />
+      </span>
+      <span class="icon icon-after flex items-center justify-center">
+        <LucideIcon icon="ArrowUpRight" class="h-6 w-6 text-white" />
+      </span>
+    </span>
+  </button>
+  <div
+    class="messages-container clear absolute top-[125%] left-0 w-full text-sm opacity-60">
+    <div class="message-error text-red-400" style="display: none"></div>
+    <div class="message-success text-green-400" style="display: none"></div>
+  </div>
+  <div style="position: absolute; left: -312.5rem" aria-hidden="true">
+    <input
+      type="text"
+      name="b_436cb8647d746fe81825f1efc_18a007239a"
+      tabindex="-1"
+      value=""
+    />
+  </div>
+  <input
+    type="hidden"
+    name="EMAILTYPE"
+    id={`mce-EMAILTYPE-0-${idSuffix}`}
+    value="html"
+  />
+  <span class="sr-only">gats-upstart</span>
+</form>
+
+<script>
+  interface JsonpResponse {
+    result: "success" | "error";
+    msg: string;
+    type?: string;
+    webEngagementCookieValue?: string | null;
+  }
+  document
+    .querySelectorAll<HTMLFormElement>(".subscribe-form")
+    .forEach((form) => {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent default form submission behavior
+        const targetForm = event.target as HTMLFormElement;
+        const formData = new FormData(targetForm);
+        const actionUrl = targetForm.getAttribute("action"); // Get the form's action URL
+
+        if (!actionUrl) {
+          console.error("Form action URL is missing.");
+          return;
+        }
+        const queryString = new URLSearchParams(formData as any).toString();
+        const errorContainer =
+          targetForm.querySelector<HTMLElement>(".message-error");
+        const successContainer =
+          targetForm.querySelector<HTMLElement>(".message-success");
+        if (!errorContainer || !successContainer) {
+          console.error("Error or success response containers are missing.");
+          return;
+        }
+        errorContainer.style.display = "none";
+        successContainer.style.display = "none";
+        try {
+          const script = document.createElement("script");
+          const callbackName = `jsonpCallback_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+          (window as any)[callbackName] = (data: JsonpResponse) => {
+            if (data.result === "success") {
+              successContainer.textContent =
+                data.msg || "Thank you for subscribing!";
+              successContainer.style.display = "block";
+            } else {
+              errorContainer.textContent =
+                data.msg || "An error occurred. Please try again.";
+              errorContainer.style.display = "block";
+            }
+            delete (window as any)[callbackName];
+            script.remove();
+          };
+          script.src = `${actionUrl}&c=${callbackName}&${queryString}`;
+          script.onerror = () => {
+            errorContainer.textContent =
+              "There was an error processing your request. Please try again later.";
+            errorContainer.style.display = "block";
+            console.error("Error loading JSONP script.");
+          };
+          document.body.appendChild(script);
+        } catch (error) {
+          errorContainer.textContent =
+            "There was an error processing your request. Please try again later.";
+          errorContainer.style.display = "block";
+          console.error("Error:", error);
+        }
+      });
+    });
+</script>

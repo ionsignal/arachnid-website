@@ -1,0 +1,101 @@
+/* Header */
+.header {
+  @apply relative z-30 w-full;
+
+  &.sticky-header {
+    @apply sticky top-5 z-50 transition-[transform,opacity,0.3s_background] duration-500;
+  }
+
+  &.scroll-up {
+    .hs-dropdown-menu.mega-menu {
+      @apply pointer-events-auto;
+    }
+  }
+
+  &.scroll-down,
+  &.scroll-up {
+    > .container {
+      @apply lg:max-w-5xl!;
+    }
+
+    .nav-item {
+      > .nav-link {
+        @apply lg:px-4 lg:py-2 xl:px-4;
+      }
+    }
+  }
+
+  /* Header Customize */
+  > .container {
+    @apply mx-auto transition-all duration-300 ease-[cubic-bezier(0.617,1.5,0.68,1)];
+
+    > nav {
+      @apply bg-theme-dark/70 rounded-full backdrop-blur-md;
+    }
+  }
+}
+
+.header .logo-wrapper {
+  .logo-text {
+    @apply text-white;
+  }
+}
+
+/* Navbar */
+.navbar {
+  @apply lg:flex!;
+  @apply flex max-lg:rounded-3xl lg:relative lg:ml-auto lg:bg-transparent;
+  @apply max-lg:bg-theme-dark mx-auto max-lg:w-full max-lg:flex-col max-lg:space-y-1 max-lg:border max-lg:p-2 lg:items-center;
+
+  .nav-item {
+    > .nav-link {
+      @apply relative flex items-center rounded-full px-4 py-1.5 text-white transition-all duration-300 lg:py-2 lg:hover:bg-white/5 xl:px-6;
+      /* Active Menu Style */
+      &.nav-link-active,
+      .hs-collapse-toggle.active {
+        @apply bg-white/5 text-white;
+      }
+    }
+  }
+}
+
+/* Badge */
+.navbar .badge {
+  @apply relative inline-block;
+
+  &:not(.badge-dot) {
+    @apply relative ml-2 inline-block rounded-full px-2 py-px text-[10px] font-medium;
+  }
+
+  &.badge-dot {
+    @apply absolute top-1 -right-3 h-1.5 w-1.5 rounded-full lg:-top-1;
+  }
+
+  &.badge-primary {
+    @apply bg-primary text-white;
+
+    &.badge-dot {
+      @apply bg-blue-400;
+    }
+  }
+
+  &.badge-info {
+    @apply text-dark bg-gray-200;
+  }
+
+  &.badge-success {
+    @apply bg-green-700 text-green-100;
+
+    &.badge-dot {
+      @apply bg-green-400;
+    }
+  }
+
+  &.badge-danger {
+    @apply bg-red-600 text-red-100;
+
+    &.badge-dot {
+      @apply bg-red-600;
+    }
+  }
+}

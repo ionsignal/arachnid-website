@@ -1,0 +1,52 @@
+/* AOS Animations */
+[data-aos] {
+  opacity: 1;
+  transform: translateY(0);
+  transition: none;
+  will-change: transform;
+}
+
+[data-aos="fade-up-sm"] {
+  transform: translate3d(0, 30px, 0);
+}
+
+[data-aos="fade-down-sm"] {
+  transform: translate3d(0, -30px, 0);
+}
+
+[data-aos="fade-right-sm"] {
+  transform: translate3d(-30px, 0, 0);
+}
+
+[data-aos="fade-left-sm"] {
+  transform: translate3d(30px, 0, 0);
+}
+
+.home-banner {
+  animation: spin-banner-image-border 12s linear infinite;
+  transform: rotate(80deg);
+}
+
+@keyframes spin-banner-image-border {
+  0% {
+    transform: rotate(80deg);
+  }
+
+  100% {
+    transform: rotate(290deg);
+  }
+}
+
+@theme {
+  --animate-blink: blink 1s step-end infinite;
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+}

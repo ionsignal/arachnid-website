@@ -1,0 +1,42 @@
+---
+import SEO from "@/components/seo/Seo.astro";
+import JsonLD from "@/components/widgets/JsonLD.astro";
+import Favicons from "@/components/seo/Favicons.astro";
+import OpenGraph from "@/components/seo/OpenGraph.astro";
+import config from ".astro/config.generated.json" with { type: "json" };
+import { Font } from "astro:assets";
+---
+
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    http-equiv="Content-Language"
+    content={config.settings.multilingual.defaultLanguage || "en"}
+  />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=5"
+  />
+  <SEO {...Astro.props} />
+  <meta
+    name="theme-color"
+    media="(prefers-color-scheme: light)"
+    content="#fff"
+  />
+  <meta
+    name="theme-color"
+    media="(prefers-color-scheme: dark)"
+    content="#000"
+  />
+  <meta name="generator" content={Astro.generator} />
+  {config.head?.content && <Fragment set:html={config.head?.content} />}
+  <OpenGraph {...Astro.props} />
+  <Favicons />
+  <JsonLD
+    content={{
+      ...Astro.props,
+    }}
+  />
+  <Font cssVariable="--astro-font-secondary" preload />
+  <Font cssVariable="--astro-font-tertiary" preload />
+</head>

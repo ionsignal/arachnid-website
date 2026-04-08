@@ -1,0 +1,62 @@
+---
+import { formatUrl } from "@/utils/core";
+import { markdownify, toSentenceCase } from "@/utils/text";
+import Image from "@/components/helpers/Image.astro";
+import config from ".astro/config.generated.json" with { type: "json" };
+import defaultLogo from "@/assets/images/logo.svg";
+import type { ImageMetadata } from "astro";
+
+const getNumber = (value: string) => {
+  if (!value) return 29;
+  const base = 16;
+  const updatedValue = value.replace("px", "").replace("rem", "");
+  let valueAsNumber = Number(updatedValue);
+  if (isNaN(valueAsNumber)) return 29;
+  if (value.includes("rem")) {
+    return (valueAsNumber = Number(updatedValue) * base);
+  }
+  return valueAsNumber;
+};
+
+type Props = {
+  src?: ImageMetadata | string | null;
+  class?: string;
+};
+
+let { src, class: className } = Astro.props;
+let {
+  logo,
+  logoWidth = "29px",
+  logoHeight = "29px",
+  logoText,
+  title,
+} = config.site;
+const imgSource = src ? src : logo ? defaultLogo : null;
+---
+
+<a href={formatUrl("/")} class:list={["logo-wrapper", className]}>
+  {
+    imgSource ? (
+      <>
+        <Image
+          src={imgSource}
+          class="logo"
+          width={getNumber(logoWidth)}
+          height={getNumber(logoHeight)}
+          alt={toSentenceCase("Brand logo of " + title)}
+          style={{
+            height: getNumber(logoHeight) + "px",
+            width: getNumber(logoWidth) + "px",
+          }}
+        />
+        {logoText && (
+          <span class="logo-text" set:html={markdownify(logoText)} />
+        )}
+      </>
+    ) : logoText ? (
+      logoText
+    ) : (
+      title
+    )
+  }
+</a>

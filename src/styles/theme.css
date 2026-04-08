@@ -1,0 +1,49 @@
+@theme inline {
+  /* Configure base font size, type scale, and font families in `src/config/fonts.json` */
+  --leading-body: 1.8;
+  --leading-inherit: inherit;
+  --font-primary: "Satoshi", sans-serif;
+  --font-secondary: var(--astro-font-secondary, "Syne", sans-serif);
+  --font-tertiary: var(--astro-font-tertiary, "Instrument Serif", sans-serif);
+  --font-mono: var(--astro-font-mono, "JetBrains Mono", monospace);
+
+  /* Colors - Abyssal Web Scheme */
+  --color-primary: #33b1ff; /* Bioluminescent Ice Blue */
+  --color-secondary: #ff5c00; /* Core-Temp Orange */
+  --color-accent: #0b1221; /* Slightly elevated deep blue for cards/sections */
+  --color-body: #060913; /* Deep Abyss Blue */
+  --color-border-light: #1a233a; /* Subtle structural borders */
+  --color-theme-dark: #080d1a; /* Navbars / Overlays */
+
+  --color-text-default: #a0abc0; /* Ice/Slate Grey for readable body text */
+  --color-dark: #03050a; /* Deepest shadow */
+  --color-light: #f0f5ff; /* Crisp icy white for headings */
+
+  /* Screen */
+  --breakpoint-*: initial;
+  --breakpoint-sm: 540px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1320px;
+
+  /* Typography */
+  --text-base: 1rem;
+  --text-base-scale: 1.272;
+  --text-base-sm: calc(var(--text-base) * 0.9);
+
+  --text-display-1: calc(var(--text-base) * pow(var(--text-base-scale), 8.8));
+
+  --text-h1: calc(var(--text-base) * pow(var(--text-base-scale), 6));
+  --text-h2: calc(var(--text-base) * pow(var(--text-base-scale), 5));
+  --text-h3: calc(var(--text-base) * pow(var(--text-base-scale), 4));
+  --text-h4: calc(var(--text-base) * pow(var(--text-base-scale), 3));
+  --text-h5: calc(var(--text-base) * pow(var(--text-base-scale), 2));
+  --text-h6: calc(var(--text-base) * pow(var(--text-base-scale), 1));
+
+  --text-h1-sm: calc(var(--text-h1) * 0.7);
+  --text-h2-sm: calc(var(--text-h2) * 0.7);
+  --text-h3-sm: calc(var(--text-h3) * 0.7);
+  --text-h4-sm: calc(var(--text-h4) * 0.9);
+  --text-h5-sm: calc(var(--text-h5) * 0.9);
+  --text-h6-sm: calc(var(--text-h6) * 0.9);
+}

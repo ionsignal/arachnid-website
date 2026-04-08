@@ -1,0 +1,44 @@
+---
+import { formatUrl } from "@/utils/core";
+import { plainify, removeWhitespace } from "@/utils/text";
+import config from ".astro/config.generated.json" with { type: "json" };
+
+let {
+  title,
+  metaTitle,
+  description,
+  metaDescription,
+  canonical,
+  keywords = config.seo.keywords,
+  disableTagline,
+  author = config.seo.author,
+  robots = config.seo.robots,
+} = Astro.props;
+title = plainify(metaTitle ? metaTitle : title ? title : config.site.title);
+keywords = keywords.join(", ");
+if (!disableTagline) {
+  title =
+    title +
+    (config.site.tagline &&
+      (config.site.taglineSeparator || " - ") + config.site.tagline);
+}
+description = plainify(
+  metaDescription
+    ? metaDescription
+    : description
+      ? description
+      : config.site.description,
+);
+canonical = formatUrl(new URL(Astro.url.href, Astro.site).href);
+---
+
+{title && <title>{removeWhitespace(title)}</title>}
+{
+  description && (
+    <meta name="description" content={removeWhitespace(description)} />
+  )
+}
+{keywords && <meta name="keywords" content={removeWhitespace(keywords)} />}
+{author && <meta name="author" content={removeWhitespace(author)} />}
+{robots && <meta name="robots" content={removeWhitespace(robots)} />}
+{canonical && <link rel="canonical" href={canonical} item-prop="url" />}

@@ -1,0 +1,47 @@
+---
+
+---
+
+<script>
+  import "preline";
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    // Manually initialize Preline plugins (Collapse, Overlay)
+    // Required in Astro SPAs to ensure DOM elements exist before binding.
+    if (
+      window.HSStaticMethods &&
+      typeof window.HSStaticMethods.autoInit === "function"
+    ) {
+      window.HSStaticMethods.autoInit();
+    }
+    // AOS - https://github.com/michalsnik/aos
+    const AOS = await import("aos");
+    AOS.init({
+      duration: 700,
+      easing: "ease-out",
+      disable: "mobile",
+      once: true,
+    });
+    initHorizontalScroll();
+  });
+  function initHorizontalScroll() {
+    document.querySelectorAll("*").forEach((el) => {
+      if (el.scrollWidth > el.clientWidth) {
+        el.addEventListener(
+          "wheel",
+          (event: Event) => {
+            const wheelEvent = event as WheelEvent;
+            if (wheelEvent.shiftKey) {
+              wheelEvent.preventDefault();
+              el.scrollBy({
+                left: wheelEvent.deltaY * 3,
+                behavior: "smooth",
+              });
+            }
+          },
+          { passive: false },
+        );
+      }
+    });
+  }
+</script>

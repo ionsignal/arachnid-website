@@ -1,0 +1,16 @@
+{
+  "main": [
+    {
+      "enable": true,
+      "label": "twitter",
+      "icon": "twitter",
+      "url": "#social"
+    },
+    {
+      "enable": true,
+      "label": "linkedin",
+      "icon": "linkedin",
+      "url": "#social"
+    }
+  ]
+}
