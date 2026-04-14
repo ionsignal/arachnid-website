@@ -21,9 +21,10 @@ const getNumber = (value: string) => {
 type Props = {
   src?: ImageMetadata | string | null;
   class?: string;
+  loading?: "eager" | "lazy";
 };
 
-let { src, class: className } = Astro.props;
+let { src, class: className, loading } = Astro.props;
 let {
   logo,
   logoWidth = "29px",
@@ -44,6 +45,8 @@ const imgSource = src ? src : logo ? defaultLogo : null;
           width={getNumber(logoWidth)}
           height={getNumber(logoHeight)}
           alt={toSentenceCase("Brand logo of " + title)}
+          loading={loading}
+          decoding="async"
           style={{
             height: getNumber(logoHeight) + "px",
             width: getNumber(logoWidth) + "px",
