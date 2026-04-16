@@ -78,6 +78,7 @@ export const collections = {
             duration: z.string().optional(),
           })
           .optional(),
+        showCategories: z.boolean().optional(),
         // Discriminated Union for the overloaded 'list' property
         list: z
           .union([
@@ -93,6 +94,19 @@ export const collections = {
               z.object({
                 title: z.string(),
                 description: z.string().optional(),
+              }),
+            ),
+            // C. FAQ Categories List
+            z.array(
+              z.object({
+                label: z.string(),
+                list: z.array(
+                  z.object({
+                    active: z.boolean().optional(),
+                    title: z.string(),
+                    content: z.string(),
+                  }),
+                ),
               }),
             ),
           ])
