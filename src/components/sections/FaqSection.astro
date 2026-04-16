@@ -1,0 +1,131 @@
+---
+import { fetchEntry } from "@/utils/content";
+import { overrideObjects } from "@/utils/core";
+import Subtitle from "@/components/widgets/Subtitle.astro";
+import { markdownify } from "@/utils/text";
+import AccordionList from "@/components/widgets/AccordionList.astro";
+import type { Section } from "@/types";
+
+type FAQItem = {
+  active?: boolean;
+  title: string;
+  content: string;
+};
+
+type FAQCategory = {
+  label: string;
+  list: FAQItem[];
+};
+
+type faqSectionType = Section & {
+  list?: FAQCategory[];
+  showCategories?: boolean;
+};
+
+type Props = {
+  content?: faqSectionType;
+};
+
+let defaultContent = (await fetchEntry("sections", "faq"))
+  ?.data as faqSectionType;
+
+let actualContent = overrideObjects(
+  { ...defaultContent },
+  Astro.props.content,
+) as faqSectionType;
+
+let {
+  enable = true,
+  title,
+  subtitle,
+  list,
+  limit,
+  showCategories,
+} = actualContent as faqSectionType;
+
+list = limit && list ? list.slice(0, limit as number) : list;
+
+if (!showCategories) {
+  list = list?.slice(0, 1);
+}
+---
+
+{
+  enable && (
+    <section>
+      <div class="container">
+        <div class="space-y-12 md:space-y-16">
+          <div class="mx-auto max-w-2xl text-center" data-aos="fade-up-sm">
+            <Subtitle content={subtitle} />
+            {title && (
+              <h2
+                class="has-italic-text text-white capitalize"
+                set:html={markdownify(title)}
+              />
+            )}
+          </div>
+          {list && list.length > 0 && (
+            <div
+              data-aos="fade-up-sm"
+              data-aos-delay="300"
+              class:list={[
+                "section-gradient relative",
+                !showCategories && "w-full",
+                {
+                  "mx-auto max-w-4xl": !showCategories,
+                },
+              ]}>
+              {
+                <div
+                  class:list={[
+                    "bg-primary/5 rounded-lg border p-6 lg:rounded-3xl lg:p-12",
+                    {
+                      "max-lg:space-y-6 lg:grid lg:grid-cols-8 lg:gap-16":
+                        showCategories,
+                    },
+                  ]}>
+                  {showCategories && (
+                    <nav
+                      role="tablist"
+                      aria-label="Tabs"
+                      aria-orientation="horizontal"
+                      class:list={["lg:col-span-3 xl:col-span-2"]}>
+                      {list.map((button: FAQCategory, index: number) => (
+                        <button
+                          role="tab"
+                          type="button"
+                          set:html={button.label}
+                          id={"tab-item-" + (index + 1)}
+                          data-hs-tab={"#tab-" + (index + 1)}
+                          aria-controls={"tab-" + (index + 1)}
+                          aria-selected={index === 0 ? "true" : "false"}
+                          class:list={[
+                            "px-6 py-2.5 text-start text-lg max-lg:min-w-full [&.active]:text-white [&.active]:max-lg:bg-white/5",
+                            { active: index === 0 },
+                          ]}
+                        />
+                      ))}
+                    </nav>
+                  )}
+                  {list.map((tab: FAQCategory, index: number) => (
+                    <AccordionList
+                      role="tabpanel"
+                      content={tab.list}
+                      class:list={[
+                        "col-span-5 space-y-5 xl:col-span-6",
+                        index === 0 ? "block" : "hidden",
+                      ]}
+                      id={"tab-" + (index + 1)}
+                      groupId={"group-1-" + (index + 1)}
+                      aria-labelledby={"tab-item-" + (index + 1)}
+                    />
+                  ))}
+                </div>
+              }
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
