@@ -26,7 +26,8 @@ export const ui = {
     main: [
       { enable: true, name: "Home", weight: 1, url: "/#home" },
       { enable: true, name: "Features", weight: 2, url: "/#features" },
-      { enable: true, name: "Get Started", weight: 3, url: "/#cta" },
+      { enable: true, name: "FAQ", weight: 3, url: "/#faq" },
+      { enable: true, name: "Get Started", weight: 4, url: "/#cta" },
     ] as NavigationLink[],
     footerMenu: [] as NavigationLink[],
     footerMenuQuickLink: [] as NavigationLink[],
