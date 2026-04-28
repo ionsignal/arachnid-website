@@ -1,21 +1,20 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "baseUrl": ".",
     "target": "ESNext",
     "allowJs": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "jsx": "react",
-    "ignoreDeprecations": "6.0",
     "isolatedModules": true,
     "incremental": true,
-    "allowSyntheticDefaultImports": true,
+    "types": ["node"],
     "paths": {
+      ".astro/*": ["./.astro/*"],
+      "@/*": ["./src/*"],
       "@/components/*": ["./src/components/*"],
-      "@/shortcodes/*": ["./src/shortcodes/*"],
-      "@/*": ["./src/*"]
+      "@/shortcodes/*": ["./src/shortcodes/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],

@@ -5,7 +5,7 @@ import {
   loadAndConvertToSvg,
 } from "@realfavicongenerator/image-adapter-node";
 import faviconGenerator from "@realfavicongenerator/generate-favicon";
-import config from "../.astro/config.generated.json" assert { type: "json" };
+import config from "../.astro/config.generated.json" with { type: "json" };
 
 // Constants
 const FAVICON_DIR = "./public/images/favicons/";
@@ -23,23 +23,19 @@ function ensureDirectoryExists(directoryPath) {
 // Main: Generate Favicons
 async function generateFavicons() {
   try {
-  // Parse configuration
+    // Parse configuration
     const title = config?.site?.title || DEFAULT_TITLE;
     const faviconImage = config?.site?.favicon?.image || DEFAULT_FAVICON_IMAGE;
-
     const faviconImagePath = faviconImage.startsWith("/")
       ? path.join("./src/assets", faviconImage)
       : path.join("./src/assets/", faviconImage);
-
     // Ensure favicon directory exists
     ensureDirectoryExists(FAVICON_DIR);
-
     // Load and convert the master icon
     const imageAdapter = await getNodeImageAdapter();
     const masterIcon = {
       icon: await loadAndConvertToSvg(faviconImagePath),
     };
-
     const faviconSettings = {
       icon: {
         desktop: {
@@ -75,21 +71,18 @@ async function generateFavicons() {
       },
       path: "/images/favicons/",
     };
-
     // Generate favicon files
     const files = await faviconGenerator.generateFaviconFiles(
       masterIcon,
       faviconSettings,
       imageAdapter,
     );
-
     // Save files to the favicon directory
     Object.entries(files).forEach(([fileName, fileContents]) => {
       const filePath = path.join(FAVICON_DIR, fileName);
       fs.writeFileSync(filePath, fileContents);
       console.log(`Saved: ${filePath}`);
     });
-
     console.log("Favicons generated successfully.");
   } catch (error) {
     console.error("Error generating favicons:", error);

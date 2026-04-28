@@ -16,7 +16,6 @@ pnpm-debug.log*
 yarn.lock
 pnpm-lock.yaml
 
-
 # environment variables
 .env
 .env.production
@@ -30,3 +29,6 @@ pnpm-lock.yaml
 # Local Netlify folder
 .netlify
 .vercel
+
+# Other
+dev.diff
