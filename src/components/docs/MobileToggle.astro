@@ -1,0 +1,27 @@
+---
+import LucideIcon from "@/components/helpers/LucideIcon.astro";
+
+interface Props {
+  targetId?: string;
+}
+
+const { targetId = "docs-sidebar" } = Astro.props;
+---
+
+<button
+  type="button"
+  class="docs-sidebar-mobile-toggle hs-collapse-toggle group lg:hidden"
+  data-hs-collapse={`#${targetId}`}
+  aria-controls={targetId}
+  aria-expanded="false"
+  aria-label="Toggle documentation menu">
+  <span class="flex items-center gap-2">
+    <LucideIcon icon="Menu" class="h-5 w-5" aria-hidden="true" />
+    <span>Documentation menu</span>
+  </span>
+  <LucideIcon
+    icon="ChevronDown"
+    class="docs-sidebar-mobile-toggle-chevron"
+    aria-hidden="true"
+  />
+</button>

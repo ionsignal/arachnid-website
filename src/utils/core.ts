@@ -1,4 +1,7 @@
 import { ui, defaultLang } from "@/i18n/ui";
+import config from ".astro/config.generated.json" with { type: "json" };
+
+const useTrailingSlash: boolean = Boolean(config.site.trailingSlash);
 
 /**
  * Safely clones an object using native structuredClone.
@@ -23,8 +26,38 @@ export const useTranslations = (lang: keyof typeof ui = defaultLang) => {
 };
 
 /**
+ * Normalizes the trailing slash of an internal relative URL path according to
+ * `config.site.trailingSlash`. Pure, synchronous, build-time only.
+ *
+ * Rules:
+ * - The bare root `/` is always returned unchanged.
+ * - File-extension paths (e.g. `/robots.txt`, `/sitemap-index.xml`) are exempt.
+ * - Query strings and fragments are preserved; the slash is inserted/removed
+ *   on the path portion only (slash before `?` or `#`).
+ * - Multiple trailing slashes on the path are collapsed to a single canonical form.
+ */
+function normalizeTrailingSlash(path: string): string {
+  if (path === "/") return path;
+  // Split into [pathname, suffix] where suffix begins at the first `?` or `#`.
+  const suffixIndex = path.search(/[?#]/);
+  const pathname = suffixIndex === -1 ? path : path.slice(0, suffixIndex);
+  const suffix = suffixIndex === -1 ? "" : path.slice(suffixIndex);
+  // Exempt static-asset-style paths (anything ending in a file extension).
+  if (/\.[a-z0-9]+$/i.test(pathname)) return path;
+  // Collapse any number of trailing slashes, then re-apply per policy.
+  const trimmed = pathname.replace(/\/+$/, "");
+  // Defensive: stripping could yield "" for an input like "/"; guard regardless.
+  const base = trimmed === "" ? "/" : trimmed;
+  const normalizedPath =
+    base === "/" ? "/" : useTrailingSlash ? base + "/" : base;
+  return normalizedPath + suffix;
+}
+
+/**
  * Strictly formats URLs for a single-page architecture.
  * Bypasses formatting for hash links (#), mailto:, and tel:.
+ * Honors `config.site.trailingSlash` for internal relative paths only;
+ * external/absolute URLs are passed through untouched.
  */
 export const formatUrl = (url: string | undefined): string => {
   if (!url) return "/";
@@ -38,7 +71,7 @@ export const formatUrl = (url: string | undefined): string => {
   try {
     const isAbsolute = url.startsWith("http://") || url.startsWith("https://");
     if (isAbsolute) return new URL(url).href;
-    return url; // Return relative paths as-is
+    return normalizeTrailingSlash(url);
   } catch (error) {
     return url;
   }

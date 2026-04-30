@@ -1,0 +1,48 @@
+---
+import "aos/dist/aos.css";
+import "@/styles/globals.css";
+
+import Head from "@/components/global/Head.astro";
+import BreakpointIndicator from "@/components/widgets/BreakpointIndicator.astro";
+import GlobalScripts from "@/components/widgets/GlobalScripts.astro";
+import PageLoader from "@/components/utilities/PageLoader.astro";
+import config from ".astro/config.generated.json" with { type: "json" };
+import type { JSONLDProps } from "@/utils/jsonLd";
+
+type Props = JSONLDProps & {
+  className?: string;
+  fitToScreen?: boolean;
+  draft?: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
+  robots?: string;
+  excludeFromSitemap?: boolean;
+  customSlug?: string;
+  canonical?: string;
+  status?: number;
+  keywords?: string[]; // Array of strings
+  disableTagline?: boolean;
+  structuredData?: Props;
+  sectionSpacing?: "md" | "lg";
+};
+
+// destructure frontmatter
+let { sectionSpacing = "lg", structuredData } = Astro.props;
+
+// Section spacing class
+const sectionSpacingClass =
+  sectionSpacing === "md" ? "has-section-spacing-md" : "has-section-spacing-lg";
+---
+
+<!doctype html>
+<html lang={config.settings.multilingual.defaultLanguage || "en"}>
+  <Head {...Astro.props} structuredData={structuredData} />
+  <body>
+    {!Astro.props.homepage && <PageLoader />}
+    <main class:list={[sectionSpacingClass, Astro.props.class]}>
+      <slot />
+    </main>
+    <GlobalScripts />
+    <BreakpointIndicator />
+  </body>
+</html>

@@ -1,0 +1,66 @@
+---
+import Logo from "@/components/global/Logo.astro";
+import LucideIcon from "@/components/helpers/LucideIcon.astro";
+import SocialComponent from "@/components/social/Social.astro";
+import socialData from "@/config/social.json";
+import type { SocialLink } from "@/types";
+
+// Filter social links for GitHub and Discord, ensuring they are enabled
+const socialLinks: SocialLink[] = socialData.main.filter(
+  (link) =>
+    link.enable && ["github", "discord"].includes(link.label.toLowerCase()),
+) as SocialLink[];
+---
+
+<header
+  class="border-border-light bg-body/90 fixed inset-x-0 top-0 z-50 flex h-(--docs-header-h) items-center border-b px-4 backdrop-blur-md lg:px-8">
+  <div class="flex w-full items-center justify-between gap-4">
+    <!-- Left: Mobile Toggle & Logo -->
+    <div class="flex items-center gap-4">
+      <button
+        type="button"
+        class="text-text-default hover:text-light flex items-center justify-center lg:hidden"
+        data-hs-overlay="#docs-sidebar"
+        data-hs-overlay-options='{"emulateScrollbarSpace": true}'
+        aria-controls="docs-sidebar"
+        aria-label="Toggle documentation navigation">
+        <LucideIcon icon="Menu" class="h-6 w-6" />
+      </button>
+      <div class="hidden w-[calc(var(--docs-sidebar-w)-4rem)] lg:block">
+        <Logo class="w-auto!" />
+      </div>
+      <!-- Show smaller logo on mobile next to hamburger -->
+      <div class="lg:hidden">
+        <Logo class="w-auto!" />
+      </div>
+    </div>
+    <!-- Middle: Mocked Search -->
+    <div class="flex flex-1 items-center justify-end lg:justify-start">
+      <button
+        type="button"
+        class="text-text-default hover:text-light flex w-full max-w-md items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm transition-colors hover:bg-white/10"
+        aria-label="Search documentation">
+        <LucideIcon icon="Search" class="h-4 w-4" />
+        <span class="hidden sm:inline-block">Search docs...</span>
+        <span class="inline-block sm:hidden">Search...</span>
+        <span
+          class="ml-auto hidden rounded border border-white/20 bg-white/10 px-1.5 text-xs font-medium sm:inline-block">
+          ⌘K
+        </span>
+      </button>
+    </div>
+    <!-- Right: Social Links -->
+    <div class="hidden items-center gap-4 sm:flex">
+      {
+        socialLinks.length > 0 && (
+          <SocialComponent
+            layout="minimal"
+            size="sm"
+            list={socialLinks}
+            class="gap-3"
+          />
+        )
+      }
+    </div>
+  </div>
+</header>

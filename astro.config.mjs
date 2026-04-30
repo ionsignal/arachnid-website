@@ -1,4 +1,5 @@
 import sitemap from "@astrojs/sitemap";
+import mdx from "@astrojs/mdx";
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import rehypeExternalLinks from "rehype-external-links";
@@ -53,6 +54,7 @@ export default defineConfig({
   },
   fonts,
   integrations: [
+    mdx(),
     sitemapConfig.enable
       ? sitemap({
           filter: (page) =>

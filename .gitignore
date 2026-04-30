@@ -5,7 +5,6 @@ dist/
 
 # dependencies
 node_modules/
-
 .unlighthouse
 
 # logs
@@ -31,4 +30,5 @@ pnpm-lock.yaml
 .vercel
 
 # Other
+tsconfig.tsbuildinfo
 dev.diff

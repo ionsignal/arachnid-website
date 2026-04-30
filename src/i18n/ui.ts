@@ -28,6 +28,7 @@ export const ui = {
       { enable: true, name: "Features", weight: 2, url: "/#features" },
       { enable: true, name: "FAQ", weight: 3, url: "/#faq" },
       { enable: true, name: "Get Started", weight: 4, url: "/#cta" },
+      { enable: true, name: "Documentation", weight: 5, url: "/docs/" },
     ] as NavigationLink[],
     footerMenu: [] as NavigationLink[],
     footerMenuQuickLink: [] as NavigationLink[],

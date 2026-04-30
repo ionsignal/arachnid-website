@@ -150,4 +150,44 @@ export const collections = {
         disableTagline: z.boolean().optional(),
       }),
   }),
+
+  // Documentation pages collection.
+  docs: defineCollection({
+    loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/docs" }),
+    schema: ({ image }) =>
+      z.object({
+        title: z.string(),
+        description: z.string().optional(),
+        sidebarLabel: z.string().optional(),
+        order: z.number().default(999),
+        draft: z.boolean().default(false),
+        // Table of Contents controls (consumed in Phase 4)
+        tableOfContents: z.boolean().default(true),
+        tocMinLevel: z.number().min(1).max(6).default(2),
+        tocMaxLevel: z.number().min(1).max(6).default(3),
+        // SEO passthrough — mirrors `homepage` schema for Base.astro compatibility
+        metaTitle: z.string().optional(),
+        metaDescription: z.string().optional(),
+        canonical: z.string().optional(),
+        keywords: z.array(z.string()).optional(),
+        robots: z.string().optional(),
+        image: z.union([image(), z.string()]).optional(),
+        disableTagline: z.boolean().optional(),
+      }),
+  }),
+
+  // Per-folder category metadata loaded from `_category.json`.
+  docCategories: defineCollection({
+    loader: glob({
+      pattern: "**/_category.json",
+      base: "./src/content/docs",
+      generateId: ({ entry }) => entry.replace(/\/_category\.json$/, ""),
+    }),
+    schema: z.object({
+      label: z.string(),
+      order: z.number().default(999),
+      icon: z.string().optional(),
+      collapsed: z.boolean().default(false),
+    }),
+  }),
 };

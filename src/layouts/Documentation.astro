@@ -1,0 +1,71 @@
+---
+import App from "@/layouts/App.astro";
+import DocsHeader from "@/components/docs/header/Header.astro";
+import Sidebar from "@/components/docs/Sidebar.astro";
+import Toc from "@/components/docs/Toc.astro";
+import Pagination from "@/components/docs/Pagination.astro";
+import { getDocsTree, getActiveTrail, getPrevNext } from "@/utils/docs";
+import { markdownify } from "@/utils/text";
+import type { DocEntry } from "@/types/docs";
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  entry: DocEntry;
+  headings: MarkdownHeading[];
+}
+
+const { entry, headings } = Astro.props;
+const { data } = entry;
+const tree = await getDocsTree();
+const activeTrail = getActiveTrail(Astro.url.pathname, tree);
+const pagination = getPrevNext(entry.id, tree);
+const seoProps = {
+  title: data.title,
+  description: data.description,
+  metaTitle: data.metaTitle,
+  metaDescription: data.metaDescription,
+  keywords: data.keywords,
+  canonical: data.canonical,
+  robots: data.robots,
+  image: data.image,
+  disableTagline: data.disableTagline,
+};
+---
+
+<App {...seoProps} sectionSpacing="md" class="docs-layout">
+  <DocsHeader />
+  <div class="w-full pt-(--docs-header-h)">
+    <Sidebar tree={tree} activeTrail={activeTrail} />
+    <main class="lg:pl-(--docs-sidebar-w) xl:pr-(--docs-toc-w)">
+      <div class="mx-auto max-w-4xl px-4 py-8 lg:px-8">
+        <article class="docs-content-col">
+          <header class="docs-page-header">
+            <h1
+              class="text-h2-sm md:text-h2 has-italic-text text-light"
+              set:html={markdownify(data.title)}
+            />
+            {
+              data.description && (
+                <p
+                  class="docs-page-lead"
+                  set:html={markdownify(data.description)}
+                />
+              )
+            }
+          </header>
+          <div class="prose-styles docs-page-body">
+            <slot />
+          </div>
+          <footer class="docs-page-footer">
+            <Pagination pagination={pagination} />
+          </footer>
+        </article>
+      </div>
+    </main>
+    <!-- TOC Container (Fixed Right) -->
+    <aside
+      class="border-border-light has-customized-scrollbar fixed inset-e-0 top-(--docs-header-h) z-40 hidden h-[calc(100vh-var(--docs-header-h))] w-(--docs-toc-w) overflow-y-auto border-l py-8 pr-4 pl-6 xl:block">
+      <Toc headings={headings} entry={entry} />
+    </aside>
+  </div>
+</App>

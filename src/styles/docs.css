@@ -1,0 +1,149 @@
+@theme {
+  /* Column widths — tunable in one place */
+  --docs-header-h: 4rem;
+  --docs-sidebar-w: 16rem;
+  --docs-toc-w: 14rem;
+}
+
+/* The `docs-layout` class is applied to <main> via Base.astro's class prop. */
+main.docs-layout {
+  @apply pt-0;
+}
+
+/* Page header (above MDX body) */
+.docs-page-header {
+  @apply border-border-light mb-8 border-b pb-6;
+}
+
+.docs-page-lead {
+  @apply mt-3 text-lg leading-relaxed opacity-80;
+}
+
+.docs-stub-label {
+  @apply border-primary/30 bg-primary/5 rounded-md border border-dashed p-4 text-sm leading-relaxed;
+}
+
+.docs-sidebar {
+  @apply w-full;
+}
+
+.docs-sidebar-section {
+  @apply flex flex-col gap-y-1 p-0 text-sm;
+}
+
+.docs-sidebar-category {
+  @apply flex flex-col;
+}
+
+.docs-sidebar-category-toggle {
+  @apply text-text-default hover:text-light flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left font-medium transition-colors duration-200;
+  @apply hover:bg-primary/5;
+}
+
+.docs-sidebar-category-label {
+  @apply flex min-w-0 items-center gap-2;
+}
+
+.docs-sidebar-category-icon {
+  @apply h-4 w-4 shrink-0;
+}
+
+.docs-sidebar-category-chevron {
+  /* Rotates when the toggle (ancestor) carries `.open` — Preline `hs-collapse-open` variant */
+  @apply hs-collapse-open:rotate-180 h-4 w-4 shrink-0 transition-transform duration-200;
+}
+
+.docs-sidebar-category-content {
+  @apply mt-1 flex flex-col gap-y-0.5 pl-3;
+}
+
+/* page link */
+.docs-sidebar-link {
+  @apply text-text-default hover:text-light hover:bg-primary/5 block rounded-md border-l-2 border-transparent px-3 py-1.5 transition-colors duration-200;
+  scroll-margin-block: calc(var(--docs-header-h) + 2rem);
+}
+
+.docs-sidebar-link-active {
+  @apply text-light border-primary bg-primary/5;
+}
+
+/* mobile toggle */
+.docs-sidebar-mobile-toggle {
+  @apply text-text-default hover:text-light border-border-light bg-primary/5 mb-3 flex w-full items-center justify-between rounded-md border px-4 py-2.5 text-sm font-medium transition-colors duration-200;
+}
+
+.docs-sidebar-mobile-toggle-chevron {
+  @apply hs-collapse-open:rotate-180 h-4 w-4 transition-transform duration-200;
+}
+
+/* TOC root container */
+.docs-toc {
+  @apply w-full;
+}
+
+/* TOC presentation */
+.docs-toc-title {
+  @apply mb-3 text-xs font-medium tracking-wider uppercase opacity-60;
+}
+
+.docs-toc-list {
+  @apply flex list-none flex-col gap-y-0.5 p-0 text-sm;
+}
+
+.docs-toc-list-nested {
+  @apply mt-0.5 pl-3;
+}
+
+.docs-toc-item {
+  @apply leading-snug;
+}
+
+.docs-toc-link {
+  @apply text-text-default hover:text-light block border-l-2 border-transparent py-1 pl-3 transition-colors duration-200;
+  scroll-margin-block: calc(var(--docs-header-h) + 2rem);
+}
+
+.docs-toc-link-active {
+  @apply text-light border-primary;
+}
+
+/* Pagination */
+.docs-page-footer {
+  @apply mt-16;
+}
+
+.docs-pagination {
+  @apply border-border-light border-t pt-8;
+}
+
+.docs-pagination-grid {
+  @apply grid grid-cols-1 gap-4 md:grid-cols-2;
+}
+
+.docs-pagination-link {
+  @apply text-text-default hover:border-primary/40 hover:bg-primary/5 hover:text-light border-border-light flex items-center gap-3 rounded-lg border p-4 transition-colors duration-200;
+}
+
+.docs-pagination-prev {
+  @apply justify-start text-left;
+}
+
+.docs-pagination-next {
+  @apply justify-end text-right md:col-start-2;
+}
+
+.docs-pagination-label {
+  @apply flex flex-col leading-tight;
+}
+
+.docs-pagination-direction {
+  @apply text-xs tracking-wider uppercase opacity-60;
+}
+
+.docs-pagination-title {
+  @apply text-light mt-0.5;
+}
+
+.docs-pagination-icon {
+  @apply h-5 w-5 shrink-0;
+}

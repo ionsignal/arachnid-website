@@ -1,0 +1,48 @@
+---
+import SidebarCategory from "@/components/docs/SidebarCategory.astro";
+import SidebarLink from "@/components/docs/SidebarLink.astro";
+import LucideIcon from "@/components/helpers/LucideIcon.astro";
+import type { DocsTree, DocActiveTrail } from "@/types/docs";
+
+interface Props {
+  tree: DocsTree;
+  activeTrail: DocActiveTrail;
+}
+
+const { tree, activeTrail } = Astro.props;
+---
+
+<nav
+  id="docs-sidebar"
+  style="--auto-close: 1024;"
+  class="hs-overlay border-border-light bg-body fixed inset-s-0 top-0 z-60 hidden h-full w-(--docs-sidebar-w) -translate-x-full transform border-r transition-all duration-300 lg:top-(--docs-header-h) lg:z-40 lg:block lg:h-[calc(100vh-var(--docs-header-h))] lg:translate-x-0 lg:bg-transparent"
+  aria-label="Documentation navigation"
+  tabindex="-1">
+  <!-- Added: Mobile close button -->
+  <div
+    class="border-border-light flex items-center justify-between border-b px-4 py-3 lg:hidden">
+    <span class="text-light font-medium">Navigation</span>
+    <button
+      type="button"
+      class="text-text-default hover:text-light"
+      data-hs-overlay="#docs-sidebar">
+      <span class="sr-only">Close navigation</span>
+      <LucideIcon icon="X" class="h-5 w-5" />
+    </button>
+  </div>
+  <!-- Added: Scrollable container for the tree -->
+  <div
+    class="has-customized-scrollbar h-full overflow-y-auto p-4 pb-20 lg:py-8">
+    <ul class="docs-sidebar-section">
+      {
+        tree.map((node) =>
+          node.type === "category" ? (
+            <SidebarCategory node={node} activeTrail={activeTrail} />
+          ) : (
+            <SidebarLink node={node} activeTrail={activeTrail} />
+          ),
+        )
+      }
+    </ul>
+  </div>
+</nav>

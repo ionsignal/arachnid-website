@@ -5,6 +5,8 @@ import {
   type CollectionKey,
 } from "astro:content";
 
+type HasDraft = { draft?: boolean };
+
 export const fetchCollection = async <C extends CollectionKey>(
   collectionName: C,
 ): Promise<CollectionEntry<C>[]> => {
@@ -15,7 +17,7 @@ export const fetchCollection = async <C extends CollectionKey>(
     },
   )) as CollectionEntry<C>[];
   if (import.meta.env.PROD) {
-    return pages.filter((page) => !page.data.draft);
+    return pages.filter((page) => !(page.data as HasDraft).draft);
   }
   return pages;
 };
@@ -25,7 +27,7 @@ export const fetchEntry = async <C extends CollectionKey>(
   subCollectionName: string,
 ): Promise<CollectionEntry<C>> => {
   const entry = await getEntry(collectionName, subCollectionName);
-  if (import.meta.env.PROD && entry?.data?.draft) {
+  if (import.meta.env.PROD && (entry?.data as HasDraft | undefined)?.draft) {
     return undefined as unknown as CollectionEntry<C>;
   }
   return entry as CollectionEntry<C>;

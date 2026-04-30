@@ -1,0 +1,26 @@
+---
+import { render } from "astro:content";
+import { getAllDocs } from "@/utils/docs";
+import Documentation from "@/layouts/Documentation.astro";
+import type { DocEntry } from "@/types/docs";
+
+export async function getStaticPaths() {
+  const docs = await getAllDocs();
+  const children = docs.filter((entry) => entry.id !== "index");
+  return children.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: DocEntry;
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+---
+
+<Documentation entry={entry} headings={headings}>
+  <Content />
+</Documentation>

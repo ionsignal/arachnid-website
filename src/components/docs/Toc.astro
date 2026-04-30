@@ -1,0 +1,147 @@
+---
+import type { DocEntry, DocTocNode } from "@/types/docs";
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+  entry: DocEntry;
+}
+
+const { headings, entry } = Astro.props;
+const tocEnabled = entry.data.tableOfContents !== false;
+const minLevel = entry.data.tocMinLevel;
+const maxLevel = entry.data.tocMaxLevel;
+
+function buildTocTree(items: MarkdownHeading[]): DocTocNode[] {
+  const roots: DocTocNode[] = [];
+  const stack: DocTocNode[] = [];
+  for (const h of items) {
+    const node: DocTocNode = {
+      slug: h.slug,
+      text: h.text,
+      depth: h.depth,
+      children: [],
+    };
+    while (stack.length > 0 && stack[stack.length - 1].depth >= node.depth) {
+      stack.pop();
+    }
+    if (stack.length === 0) roots.push(node);
+    else stack[stack.length - 1].children.push(node);
+    stack.push(node);
+  }
+  return roots;
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (ch) => {
+    switch (ch) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      default:
+        return "&#39;";
+    }
+  });
+}
+
+function renderTree(nodes: DocTocNode[], nested: boolean): string {
+  const listClass = nested
+    ? "docs-toc-list docs-toc-list-nested"
+    : "docs-toc-list";
+  const items = nodes
+    .map((node) => {
+      const children =
+        node.children.length > 0 ? renderTree(node.children, true) : "";
+      const slug = escapeHtml(node.slug);
+      const text = escapeHtml(node.text);
+      return `<li class="docs-toc-item"><a href="#${slug}" class="docs-toc-link" data-docs-toc-link="${slug}">${text}</a>${children}</li>`;
+    })
+    .join("");
+  return `<ul class="${listClass}">${items}</ul>`;
+}
+
+const filtered = tocEnabled
+  ? headings.filter((h) => h.depth >= minLevel && h.depth <= maxLevel)
+  : [];
+const tree = buildTocTree(filtered);
+const shouldRender = tocEnabled && tree.length > 0;
+const treeHtml = shouldRender ? renderTree(tree, false) : "";
+---
+
+{
+  shouldRender && (
+    <nav
+      class="docs-toc has-customized-scrollbar"
+      data-docs-toc
+      aria-label="On this page">
+      <p class="docs-toc-title">On this page</p>
+      <Fragment set:html={treeHtml} />
+    </nav>
+  )
+}
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tocRoot = document.querySelector<HTMLElement>("[data-docs-toc]");
+    if (!tocRoot) return;
+    const links = Array.from(
+      tocRoot.querySelectorAll<HTMLAnchorElement>("[data-docs-toc-link]"),
+    );
+    if (!links.length) return;
+    if (typeof IntersectionObserver === "undefined") return;
+    const linkMap = new Map<string, HTMLAnchorElement>();
+    const headingEls: HTMLElement[] = [];
+    links.forEach((link) => {
+      const slug = link.dataset.docsTocLink;
+      if (!slug) return;
+      const heading = document.getElementById(slug);
+      if (heading) {
+        linkMap.set(slug, link);
+        headingEls.push(heading);
+      } else if (import.meta.env.DEV) {
+        console.warn(`[DocsToc] No heading element found for slug: "${slug}"`);
+      }
+    });
+    if (!headingEls.length) return;
+    const intersecting = new Map<string, IntersectionObserverEntry>();
+    let activeSlug: string | null = null;
+    const setActive = (slug: string | null) => {
+      if (slug === activeSlug) return;
+      if (activeSlug) {
+        linkMap.get(activeSlug)?.classList.remove("docs-toc-link-active");
+      }
+      if (slug) {
+        linkMap.get(slug)?.classList.add("docs-toc-link-active");
+      }
+      activeSlug = slug;
+    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const id = entry.target.id;
+          if (entry.isIntersecting) intersecting.set(id, entry);
+          else intersecting.delete(id);
+        }
+        if (intersecting.size > 0) {
+          let bestSlug: string | null = null;
+          let bestTop = Infinity;
+          for (const [slug, entry] of intersecting) {
+            const top = entry.boundingClientRect.top;
+            if (top < bestTop) {
+              bestTop = top;
+              bestSlug = slug;
+            }
+          }
+          if (bestSlug) setActive(bestSlug);
+        }
+      },
+      { rootMargin: "-64px 0px -70% 0px", threshold: 0 },
+    );
+    headingEls.forEach((el) => observer.observe(el));
+  });
+</script>

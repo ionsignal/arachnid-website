@@ -1,0 +1,20 @@
+---
+import type { DocActiveTrail, DocNavPageNode } from "@/types/docs";
+
+interface Props {
+  node: DocNavPageNode;
+  activeTrail: DocActiveTrail;
+}
+
+const { node, activeTrail } = Astro.props;
+const isActive = node.id === activeTrail.pageId;
+---
+
+<li>
+  <a
+    href={node.path}
+    class:list={["docs-sidebar-link", { "docs-sidebar-link-active": isActive }]}
+    aria-current={isActive ? "page" : undefined}>
+    {node.label}
+  </a>
+</li>

@@ -3,7 +3,7 @@
   @apply prose text-text-default max-w-none;
 
   /* Typography */
-  @apply prose-headings:scroll-mt-32 prose-headings:font-medium prose-headings:mb-[.6em] prose-headings:mt-10 prose-headings:text-light;
+  @apply prose-headings:scroll-mt-[calc(var(--docs-header-h)+2rem)] prose-headings:font-medium prose-headings:mb-[.6em] prose-headings:mt-10 prose-headings:text-light;
   @apply prose-h1:text-h1-sm;
   @apply prose-h2:text-h2-sm;
   @apply prose-h3:text-h3-sm;
