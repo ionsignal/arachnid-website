@@ -1,0 +1,55 @@
+---
+/**
+ * Headless social-chip list.
+ *
+ * Owns markup structure and accessibility semantics; delegates all visual
+ * presentation (chip background, sizing, hover, etc.) to the call site via
+ * `class`, `anchorClass`, and `iconClass` pass-through props.
+ *
+ * Modeled on the astro.build `SocialLinks.astro` pattern: small, no variant
+ * enums, single `links` data prop. The extra `*Class` props exist because
+ * arachnid surfaces socials with intentionally different visual treatments
+ * (filled glass, airy outline, touch-sized drawer chips).
+ */
+import SvgIcon from "@/components/helpers/SvgIcon.astro";
+import type { SocialLink } from "@/types";
+
+interface Props {
+  links: SocialLink[];
+  /** Classes applied to the wrapping <ul>. */
+  class?: string;
+  /** Classes applied to each anchor (one per chip). */
+  anchorClass?: string;
+  /** Classes applied to each icon. Defaults to a header-sized icon. */
+  iconClass?: string;
+  /** aria-label for the list. Describes the group of links to assistive tech. */
+  label?: string;
+}
+
+const {
+  links,
+  class: listClass,
+  anchorClass,
+  iconClass = "h-[18px] w-[18px]",
+  label = "Community links",
+} = Astro.props;
+---
+
+{
+  links.length > 0 && (
+    <ul class:list={["flex items-center", listClass]} aria-label={label}>
+      {links.map((social) => (
+        <li>
+          <a
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={anchorClass}>
+            <span class="sr-only">{social.label}</span>
+            <SvgIcon icon={social.icon} class={iconClass} aria-hidden="true" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}

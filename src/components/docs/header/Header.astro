@@ -1,15 +1,8 @@
 ---
 import Logo from "@/components/global/Logo.astro";
 import LucideIcon from "@/components/helpers/LucideIcon.astro";
-import SocialComponent from "@/components/social/Social.astro";
-import socialData from "@/config/social.json";
-import type { SocialLink } from "@/types";
-
-// Filter social links for GitHub and Discord, ensuring they are enabled
-const socialLinks: SocialLink[] = socialData.main.filter(
-  (link) =>
-    link.enable && ["github", "discord"].includes(link.label.toLowerCase()),
-) as SocialLink[];
+import SocialChips from "@/components/social/SocialChips.astro";
+import { headerSocials } from "@/utils/socials";
 ---
 
 <header
@@ -50,17 +43,10 @@ const socialLinks: SocialLink[] = socialData.main.filter(
       </button>
     </div>
     <!-- Right: Social Links -->
-    <div class="hidden items-center gap-4 sm:flex">
-      {
-        socialLinks.length > 0 && (
-          <SocialComponent
-            layout="minimal"
-            size="sm"
-            list={socialLinks}
-            class="gap-3"
-          />
-        )
-      }
-    </div>
+    <SocialChips
+      links={headerSocials}
+      class="flex gap-1.5 sm:gap-2"
+      anchorClass="text-text-default hover:text-light focus-visible:ring-primary/60 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/10 hover:ring-white/20 focus-visible:ring-2 focus-visible:outline-none"
+    />
   </div>
 </header>
