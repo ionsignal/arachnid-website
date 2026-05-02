@@ -4,7 +4,9 @@ import config from ".astro/config.generated.json" with { type: "json" };
 import NavigationButton from "@/components/global/header/NavigationButton.astro";
 import NavMenuItem from "@/components/global/header/MenuItem.astro";
 import NavToggleBtn from "@/components/global/header/NavToggleBtn.astro";
+import SocialChips from "@/components/social/SocialChips.astro";
 import { useTranslations, sortByWeight, filteredEnabled } from "@/utils/core";
+import { headerSocials } from "@/utils/socials";
 import type { NavigationLink } from "@/types";
 
 const t = useTranslations();
@@ -42,11 +44,35 @@ const {
               </li>
             )
           }
+          {
+            headerSocials.length > 0 && (
+              <li class="mt-1 border-t border-white/10 px-4 pt-3 lg:hidden">
+                <SocialChips
+                  links={headerSocials}
+                  class="gap-2"
+                  anchorClass="text-text-default hover:text-light focus-visible:ring-primary/60 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/5 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/10 hover:ring-white/20 focus-visible:ring-2 focus-visible:outline-none"
+                  iconClass="h-5 w-5"
+                />
+              </li>
+            )
+          }
         </ul>
       </div>
       {
-        navigationButton.enable && (
-          <div class="hidden gap-3.5 max-lg:me-4 max-lg:ml-auto lg:flex lg:items-center">
+        (headerSocials.length > 0 || navigationButton.enable) && (
+          <div class="hidden items-center gap-2 max-lg:me-4 max-lg:ml-auto lg:flex">
+            <SocialChips
+              links={headerSocials}
+              class="gap-1"
+              anchorClass="group text-text-default hover:text-light focus-visible:ring-primary/60 inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200 hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
+              iconClass="h-[18px] w-[18px] transition-transform duration-200 group-hover:scale-110"
+            />
+            {headerSocials.length > 0 && navigationButton.enable && (
+              <span
+                class="mx-1 h-5 w-px self-center bg-white/10"
+                aria-hidden="true"
+              />
+            )}
             {navigationButton.enable && (
               <NavigationButton
                 navigationButton={navigationButton}
