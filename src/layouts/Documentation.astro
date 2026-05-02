@@ -36,7 +36,7 @@ const seoProps = {
   <DocsHeader />
   <div class="w-full pt-(--docs-header-h)">
     <Sidebar tree={tree} activeTrail={activeTrail} />
-    <main class="lg:pl-(--docs-sidebar-w) xl:pr-(--docs-toc-w)">
+    <div class="lg:pl-(--docs-sidebar-w) xl:pr-(--docs-toc-w)">
       <div class="mx-auto max-w-4xl px-4 py-8 lg:px-8">
         <article class="docs-content-col">
           <header class="docs-page-header">
@@ -61,7 +61,7 @@ const seoProps = {
           </footer>
         </article>
       </div>
-    </main>
+    </div>
     <!-- TOC Container (Fixed Right) -->
     <aside
       class="border-border-light has-customized-scrollbar fixed inset-e-0 top-(--docs-header-h) z-40 hidden h-[calc(100vh-var(--docs-header-h))] w-(--docs-toc-w) overflow-y-auto border-l py-8 pr-4 pl-6 xl:block">

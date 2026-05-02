@@ -10,7 +10,7 @@ import config from ".astro/config.generated.json" with { type: "json" };
 import type { JSONLDProps } from "@/utils/jsonLd";
 
 type Props = JSONLDProps & {
-  className?: string;
+  class?: string;
   fitToScreen?: boolean;
   draft?: boolean;
   metaTitle?: string;
@@ -20,16 +20,13 @@ type Props = JSONLDProps & {
   customSlug?: string;
   canonical?: string;
   status?: number;
-  keywords?: string[]; // Array of strings
+  keywords?: string[];
   disableTagline?: boolean;
   structuredData?: Props;
   sectionSpacing?: "md" | "lg";
 };
 
-// destructure frontmatter
-let { sectionSpacing = "lg", structuredData } = Astro.props;
-
-// Section spacing class
+let { sectionSpacing = "lg", structuredData, class: className } = Astro.props;
 const sectionSpacingClass =
   sectionSpacing === "md" ? "has-section-spacing-md" : "has-section-spacing-lg";
 ---
@@ -39,7 +36,7 @@ const sectionSpacingClass =
   <Head {...Astro.props} structuredData={structuredData} />
   <body>
     {!Astro.props.homepage && <PageLoader />}
-    <main class:list={[sectionSpacingClass, Astro.props.class]}>
+    <main class:list={[sectionSpacingClass, className]}>
       <slot />
     </main>
     <GlobalScripts />
