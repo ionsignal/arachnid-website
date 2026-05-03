@@ -2,7 +2,7 @@
 import { formatUrl } from "@/utils/core";
 import { markdownify, toSentenceCase } from "@/utils/text";
 import Image from "@/components/helpers/Image.astro";
-import config from ".astro/config.generated.json" with { type: "json" };
+import config from ".astro/config.generated.json";
 import defaultLogo from "@/assets/images/logo.svg";
 import type { ImageMetadata } from "astro";
 
@@ -32,12 +32,38 @@ let {
   logoText,
   title,
 } = config.site;
-const imgSource = src ? src : logo ? defaultLogo : null;
+
+const imgSource = src ? src : logo ? logo : defaultLogo;
+let rawSvgContent = "";
+if (typeof imgSource === "string" && imgSource.endsWith(".svg")) {
+  const svgFiles = import.meta.glob("/src/assets/images/**/*.svg", {
+    query: "?raw",
+    import: "default",
+  });
+  const cleanPath = imgSource.replace(/^\/?images\//, "");
+  const expectedPath = `/src/assets/images/${cleanPath}`;
+  if (expectedPath in svgFiles) {
+    let svgString = (await svgFiles[expectedPath]()) as string;
+    const svgClass = "logo text-white";
+    const svgStyle = `height: ${getNumber(logoHeight)}px; width: ${getNumber(logoWidth)}px;`;
+    rawSvgContent = svgString.replace(
+      /^<svg/,
+      `<svg class="${svgClass}" style="${svgStyle}" aria-label="${toSentenceCase("Brand logo of " + title)}"`,
+    );
+  }
+}
 ---
 
 <a href={formatUrl("/")} class:list={["logo-wrapper", className]}>
   {
-    imgSource ? (
+    rawSvgContent ? (
+      <>
+        <Fragment set:html={rawSvgContent} />
+        {logoText && (
+          <span class="logo-text" set:html={markdownify(logoText)} />
+        )}
+      </>
+    ) : imgSource ? (
       <>
         <Image
           src={imgSource}

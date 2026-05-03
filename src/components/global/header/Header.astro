@@ -1,6 +1,6 @@
 ---
 import Logo from "@/components/global/Logo.astro";
-import config from ".astro/config.generated.json" with { type: "json" };
+import config from ".astro/config.generated.json";
 import NavigationButton from "@/components/global/header/NavigationButton.astro";
 import NavMenuItem from "@/components/global/header/MenuItem.astro";
 import NavToggleBtn from "@/components/global/header/NavToggleBtn.astro";
@@ -26,7 +26,10 @@ const {
   ]}>
   <div class="relative container">
     <nav class="relative flex items-center justify-between px-2 py-2.5">
-      <Logo class={logoHoverAnimation ? "has-hover-animation" : ""} loading="eager" />
+      <Logo
+        class={logoHoverAnimation ? "has-hover-animation" : ""}
+        loading="eager"
+      />
       <div
         id="nav-menu"
         class="hs-collapse hidden grow basis-full overflow-hidden transition-all duration-300 max-lg:absolute max-lg:top-full max-lg:left-0 max-lg:z-40 max-lg:w-full lg:block lg:w-auto lg:basis-auto">

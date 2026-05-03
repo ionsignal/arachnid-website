@@ -1,0 +1,21 @@
+---
+// Provides the absolute background container for the WebGPU canvas
+// and initializes the client-side rendering engine.
+---
+
+<div
+  id="hero-bg-canvas"
+  class="pointer-events-none absolute inset-0 -z-10 size-full overflow-hidden"
+  aria-hidden="true">
+  <div
+    class="bg-body absolute inset-0 size-full mask-[linear-gradient(to_top,black_0%,transparent_20%)] [-webkit-mask-image:linear-gradient(to_top,black_0%,transparent_20%)]">
+  </div>
+</div>
+
+<script>
+  import { initVisualization } from "@/utils/visualization";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initVisualization("#hero-bg-canvas");
+  });
+</script>

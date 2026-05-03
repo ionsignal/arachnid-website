@@ -1,5 +1,5 @@
 import { ui, defaultLang } from "@/i18n/ui";
-import config from ".astro/config.generated.json" with { type: "json" };
+import config from ".astro/config.generated.json";
 
 const useTrailingSlash: boolean = Boolean(config.site.trailingSlash);
 

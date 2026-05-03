@@ -1,5 +1,5 @@
 import { getCollection, getEntry } from "astro:content";
-import config from ".astro/config.generated.json" with { type: "json" };
+import config from ".astro/config.generated.json";
 import type {
   DocActiveTrail,
   DocCategoryEntry,

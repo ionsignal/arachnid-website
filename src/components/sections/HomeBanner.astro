@@ -5,6 +5,7 @@ import Customers from "@/components/sections/Customers.astro";
 import ButtonLink from "@/components/buttons/ButtonLink.astro";
 import AnimatedText from "@/components/widgets/AnimatedText.astro";
 import SubscriptionForm from "@/components/widgets/SubscriptionForm.astro";
+import Visualization from "@/components/widgets/Visualization.astro";
 import { plainify } from "@/utils/text";
 import { overrideObjects } from "@/utils/core";
 import { markdownify } from "@/utils/text";
@@ -32,6 +33,9 @@ let { title, badge, customers, description, image, buttons, subscription } =
 
 <section id="home">
   <div class="banner-gradient stretched-link relative">
+    <!-- WebGPU Bioluminescent Data Ocean Background -->
+    <Visualization />
+
     <div class="container">
       <div class="relative z-10 mx-auto max-w-4xl space-y-10">
         <div class="flex flex-col items-center gap-y-8 text-center md:gap-y-10">
@@ -72,7 +76,7 @@ let { title, badge, customers, description, image, buttons, subscription } =
           {
             description && (
               <AnimatedText
-                class="mx-auto max-w-2xl text-center text-lg/normal text-white/80"
+                class="[&_strong]:text-secondary [&_b]:text-secondary mx-auto max-w-2xl text-center text-lg/normal text-white/80 [&_strong]:font-bold"
                 stagger={0.03}
                 delay={0.4}
                 content={markdownify(description)}

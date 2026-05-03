@@ -1,13 +1,13 @@
 # Site Configuration
 [site]
-  title              = "Arachnid" # Shared title for SEO and OpenGraph
-  description        = "A highly customizable saas & startup astro theme built with Tailwind CSS and Astro Js" # Shared description for SEO and OpenGraph
-  tagline            = "Saas & Startup Astro Js Theme"
+  title              = "Qiln" # Shared title for SEO and OpenGraph
+  description        = "Qiln is the only open-source, GPU-aware, ZFS-native workspace orchestration engine on the market" # Shared description for SEO and OpenGraph
+  tagline            = "Orchestrate GPUs"
   taglineSeparator   = "" # default is " - " 
-  baseUrl            = "https://arachnid.ionsignal.com" # Base URL for the site and used in OpenGraph meta tags.
+  baseUrl            = "https://qiln.com" # Base URL for the site and used in OpenGraph meta tags.
   logo               = "/images/logo.svg" # Path to the site's logo
-  logoHoverAnimation = true # Enable or disable logo hover animation
-  logoText           = "Arachnid" # Text displayed next to the logo
+  logoHoverAnimation = false # Enable or disable logo hover animation
+  logoText           = "Qiln" # Text displayed next to the logo
   logoWidth          = "32px" # Width of the logo
   logoHeight         = "32px" # Height of the logo
 
@@ -25,11 +25,11 @@
 # Specific SEO configurations that complement the general site settings.
 # -----------------------------------------------------------------------------------------------------------------------------------
 [seo]
-  author = "Getastrothemes"
+  author = "ionsignal"
   keywords = [
-    "saas astro theme",
-    "saas business astro theme",
-    "startup astro theme",
+    "gpu orchestration",
+    "paas orchestration",
+    "workspace orchestration",
   ] # SEO keywords
   robots = "index, follow" # Instructs search engines on how to crawl and index the pages.
 
@@ -66,18 +66,18 @@
   # formspree | formsubmit.co | netlify (default is formsubmit.co) 
   contactFormProvider = "formsubmit.co"
 
-  footerDescription = "" # Check src/i18n/en.json and src/i18n/fr.json for changing the footer description in different languages or directly add value here if you are not using internationalization feature
+  footerDescription = "" # Check src/i18n/en.json and src/i18n/fr.json for changing the footer description in different languages
 
   # For changing footer description and footer copyright in different languages see src/i18n/en.json and src/i18n/fr.json
   # We kindly appreciate it if you retain the theme copyright. Thank you for supporting Getastrothemes!
   [settings.copyright]
     enable = true
-    text   = "" # Check src/i18n/en.json and src/i18n/fr.json for changing the copyright text in different languages or directly add value here if you are not using internationalization feature
+    text   = "" # Check src/i18n/en.json and src/i18n/fr.json for changing the copyright text in different languages
 
   # Mailchimp Subscription Form located in footer
   [settings.subscription]
     enable     = true # Enables or disable the subscription form
-    title      = "" # Check src/i18n/en.json and src/i18n/fr.json for changing the title in different languages or directly add value here if you are not using internationalization feature
+    title      = "" # Check src/i18n/en.json and src/i18n/fr.json for changing the title in different languages
     formAction = "https://gmail.us11.list-manage.com/subscribe/post?u=d870b06d86c16269e4b1f9b39&amp;id=12cf0c6ac2&amp;f_id=007e61e1f0"
 
   # Multilingual settings (check src/config/language.json for changing the languages)
@@ -93,7 +93,7 @@
   # Navigation Button In Header
   [settings.navigationButton]
     enable = true
-    label  = "" # Check src/i18n/en.json and src/i18n/fr.json for changing the navigation button label in different languages or directly add value here if you are not using internationalization feature
+    label  = "" # Check src/i18n/en.json and src/i18n/fr.json for changing the navigation button label in different languages
     url    = "/contact/"
 
   [settings.markup.tableOfContents]
@@ -102,7 +102,6 @@
     endLevel   = 5
     ordered    = false
     startLevel = 1
-
 
 # OpenGraph Metadata
 # Specific OpenGraph settings, using values from the [site] section where possible.
@@ -119,5 +118,4 @@
 [head]
   content = """
   <!-- You can easily add this type of tracking code by updating the `config.toml` file -->
-  <script defer src="/umami.is.js" data-website-id=""></script>
   """
