@@ -1,7 +1,5 @@
 # Qiln Website
 
-Marketing, documentation, and blog website for **Qiln** — Persistent visual-first AI workspaces for ComfyUI, private model vaults, and reserved high-VRAM GPUs.
-
 ## Tech Stack
 
 - **Framework:** [Astro 7](https://astro.build/) (Static Site Generation)
