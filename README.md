@@ -48,6 +48,10 @@ git tag --sort=-version:refname | head -n 1
 
 `git status --short` must return no output before continuing.
 
+```bash
+npm run typecheck
+```
+
 ### 2. Run the version bump
 
 Choose one:
