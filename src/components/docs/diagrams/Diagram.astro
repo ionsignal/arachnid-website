@@ -1,10 +1,5 @@
 ---
 import LucideIcon from "@/components/helpers/LucideIcon.astro";
-import type { CollectionEntry } from "astro:content";
-
-type HeroDiagramContent = NonNullable<
-  CollectionEntry<"sections">["data"]["heroDiagram"]
->;
 
 type DiagramPoint = {
   x: number;
@@ -34,26 +29,120 @@ type DiagramLayout = {
 
 interface Props {
   class?: string;
-  content?: HeroDiagramContent;
   scale?: number;
 }
 
-const { class: className, content, scale = 1 } = Astro.props;
-const diagramScale = Number.isFinite(scale)
+const { class: className, scale = 1 } = Astro.props;
+const clampedScale = Number.isFinite(scale)
   ? Math.min(Math.max(scale, 0.5), 1)
   : 1;
-const annotations = content?.annotations;
-const humansAgents = annotations?.humansAgents;
-const branchPolicy = annotations?.branchPolicy;
-const knownGood = content?.knownGood;
-const forkAction = content?.fork;
-const forkedBranch = content?.forkedBranch;
-const goldenTest = content?.goldenTest;
-const capsuleDiff = content?.capsuleDiff;
-const promoteAction = content?.promote;
-const productionRoute = content?.productionRoute;
-const rollback = content?.rollback;
-const processRail = content?.processRail;
+
+const diagramContent = {
+  annotations: {
+    humansAgents: {
+      title: "Humans + agents",
+      description: "edit forked branches only",
+    },
+    branchPolicy: {
+      title: "Branch policy",
+      items: [
+        "Scoped credentials",
+        "No production secret references",
+        "Side effects controlled",
+      ],
+    },
+  },
+  knownGood: {
+    title: "Known-good capsule",
+    items: [
+      "Workflows + app services",
+      "Models + private assets",
+      "Dependencies + routes",
+      "Snapshots + rollback\nmetadata",
+    ],
+    runtime: {
+      label: "Runtime: on demand",
+      description: "Start / stop when needed",
+    },
+  },
+  fork: {
+    label: "Fork",
+  },
+  forkedBranch: {
+    title: "Forked capsule branch",
+    isolationDescription: "Edit in isolation",
+    candidateDescription: "candidate version",
+    runtimeStatus: "Runtime: running",
+  },
+  capsuleDiff: {
+    title: "Capsule diff side-effect log",
+  },
+  goldenTest: {
+    title: "Golden test evidence",
+  },
+  promote: {
+    label: "Promote",
+  },
+  productionRoute: {
+    title: "Production route alias",
+    routeAliasDescription: "→ approved",
+    versionDescription: "capsule version",
+  },
+  rollback: {
+    title: "Roll back",
+    availabilityDescription: "available if needed",
+    routeAliasDescription: "move route alias",
+    destinationDescription: "to known-good capsule",
+  },
+  processRail: {
+    ariaLabel: "Capsule change process",
+    steps: [
+      {
+        label: "Fork",
+        icon: "GitFork",
+        accent: "action",
+      },
+      {
+        label: "Edit",
+        icon: "PencilLine",
+        accent: "neutral",
+      },
+      {
+        label: "Diff",
+        icon: "FileDiff",
+        accent: "neutral",
+      },
+      {
+        label: "Test",
+        icon: "FlaskConical",
+        accent: "neutral",
+      },
+      {
+        label: "Promote",
+        icon: "ShieldCheck",
+        accent: "action",
+      },
+      {
+        label: "Roll back",
+        icon: "RotateCcw",
+        accent: "neutral",
+      },
+    ],
+  },
+} as const;
+
+const {
+  annotations: { humansAgents, branchPolicy },
+  knownGood,
+  fork: forkAction,
+  forkedBranch,
+  capsuleDiff,
+  goldenTest,
+  promote: promoteAction,
+  productionRoute,
+  rollback,
+  processRail,
+} = diagramContent;
 const knownGoodItemIcons = ["Workflow", "Database", "Route", "History"];
 
 const diagramLayout = {
@@ -109,26 +198,26 @@ const diagramLayout = {
         fork: { x: 0, y: 105 },
         branchPolicy: { x: 0, y: 50 },
         humansAgents: { x: 180, y: 0 },
-        goldenTest: { x: 220, y: 105 },
+        capsuleDiff: { x: 220, y: 105 },
       },
     },
-    goldenTest: {
+    capsuleDiff: {
       x: 760,
       y: 380,
       width: 140,
       height: 130,
       ports: {
         forkedBranch: { x: 0, y: 65 },
-        capsuleDiff: { x: 140, y: 65 },
+        goldenTest: { x: 140, y: 65 },
       },
     },
-    capsuleDiff: {
+    goldenTest: {
       x: 930,
       y: 380,
       width: 140,
       height: 130,
       ports: {
-        goldenTest: { x: 0, y: 65 },
+        capsuleDiff: { x: 0, y: 65 },
         promote: { x: 140, y: 65 },
       },
     },
@@ -138,7 +227,7 @@ const diagramLayout = {
       width: 112,
       height: 70,
       ports: {
-        capsuleDiff: { x: 0, y: 35 },
+        goldenTest: { x: 0, y: 35 },
         productionRoute: { x: 112, y: 35 },
       },
     },
@@ -196,7 +285,11 @@ const wrapLines = (value: string, maxCharacters: number) => {
   return lines;
 };
 
-const createViewBox = (width: number, height: number, scaleFactor: number) => {
+const createScaledViewBox = (
+  width: number,
+  height: number,
+  scaleFactor: number,
+) => {
   const scaledWidth = width / scaleFactor;
   const scaledHeight = height / scaleFactor;
   const offsetX = (width - scaledWidth) / 2;
@@ -230,17 +323,17 @@ const connectorPaths = {
     toCanvasPoint(cards.fork, cards.fork.ports.forkedBranch),
     toCanvasPoint(cards.forkedBranch, cards.forkedBranch.ports.fork),
   ),
-  forkedBranchToGoldenTest: buildConnectorPath(
-    toCanvasPoint(cards.forkedBranch, cards.forkedBranch.ports.goldenTest),
-    toCanvasPoint(cards.goldenTest, cards.goldenTest.ports.forkedBranch),
+  forkedBranchToCapsuleDiff: buildConnectorPath(
+    toCanvasPoint(cards.forkedBranch, cards.forkedBranch.ports.capsuleDiff),
+    toCanvasPoint(cards.capsuleDiff, cards.capsuleDiff.ports.forkedBranch),
   ),
-  goldenTestToCapsuleDiff: buildConnectorPath(
-    toCanvasPoint(cards.goldenTest, cards.goldenTest.ports.capsuleDiff),
+  capsuleDiffToGoldenTest: buildConnectorPath(
     toCanvasPoint(cards.capsuleDiff, cards.capsuleDiff.ports.goldenTest),
+    toCanvasPoint(cards.goldenTest, cards.goldenTest.ports.capsuleDiff),
   ),
-  capsuleDiffToPromote: buildConnectorPath(
-    toCanvasPoint(cards.capsuleDiff, cards.capsuleDiff.ports.promote),
-    toCanvasPoint(cards.promote, cards.promote.ports.capsuleDiff),
+  goldenTestToPromote: buildConnectorPath(
+    toCanvasPoint(cards.goldenTest, cards.goldenTest.ports.promote),
+    toCanvasPoint(cards.promote, cards.promote.ports.goldenTest),
   ),
   promoteToProductionRoute: buildConnectorPath(
     toCanvasPoint(cards.promote, cards.promote.ports.productionRoute),
@@ -289,25 +382,17 @@ const connectorPaths = {
   ),
 };
 
-const goldenTestTitleLines = goldenTest ? wrapLines(goldenTest.title, 16) : [];
-const capsuleDiffTitleLines = capsuleDiff
-  ? wrapLines(capsuleDiff.title, 15)
-  : [];
-const productionRouteTitleLines = productionRoute
-  ? wrapLines(productionRoute.title, 14)
-  : [];
-const diagramViewBox = createViewBox(
+const capsuleDiffTitleLines = wrapLines(capsuleDiff.title, 15);
+const goldenTestTitleLines = wrapLines(goldenTest.title, 16);
+const productionRouteTitleLines = wrapLines(productionRoute.title, 14);
+const diagramViewBox = createScaledViewBox(
   diagramLayout.canvas.width,
   diagramLayout.canvas.height,
-  diagramScale,
+  clampedScale,
 );
 ---
 
-<div
-  class:list={[
-    "hero-product-diagram relative z-30 hidden w-full md:block",
-    className,
-  ]}>
+<div class:list={["hero-product-diagram relative z-30 w-full", className]}>
   <svg
     viewBox={diagramViewBox}
     preserveAspectRatio="xMidYMid meet"
@@ -339,17 +424,17 @@ const diagramViewBox = createViewBox(
         marker-end="url(#diagram-arrow)">
       </path>
       <path
-        d={connectorPaths.forkedBranchToGoldenTest}
+        d={connectorPaths.forkedBranchToCapsuleDiff}
         class="diagram-connector"
         marker-end="url(#diagram-arrow)">
       </path>
       <path
-        d={connectorPaths.goldenTestToCapsuleDiff}
+        d={connectorPaths.capsuleDiffToGoldenTest}
         class="diagram-connector"
         marker-end="url(#diagram-arrow)">
       </path>
       <path
-        d={connectorPaths.capsuleDiffToPromote}
+        d={connectorPaths.goldenTestToPromote}
         class="diagram-connector"
         marker-end="url(#diagram-arrow)">
       </path>
@@ -424,57 +509,52 @@ const diagramViewBox = createViewBox(
         </rect>
         <path d="M20 66H240" class="diagram-divider"></path>
         <path d="M20 355H240" class="diagram-divider"></path>
-        {
-          knownGood && (
-            <g>
-              <text x="20" y="44" class="diagram-content-title">
-                {knownGood.title}
-              </text>
-              {knownGood.items.map((item, index) => {
-                const itemLines = splitLines(item);
-                const labelY = itemLines.length > 1 ? 112 : 120;
-                return (
-                  <g transform={`translate(0 ${index * 64})`}>
-                    <LucideIcon
-                      icon={knownGoodItemIcons[index] ?? "Circle"}
-                      x="33"
-                      y="102"
-                      width="22"
-                      height="22"
-                      class="diagram-content-icon diagram-icon-primary"
-                    />
-                    <text x="63" y={labelY} class="diagram-content-row-label">
-                      {itemLines.map((line, lineIndex) => (
-                        <tspan x="63" dy={lineIndex === 0 ? 0 : 16}>
-                          {line}
-                        </tspan>
-                      ))}
-                    </text>
-                  </g>
-                );
-              })}
-              <g>
-                <LucideIcon
-                  icon="Power"
-                  x="33"
-                  y="374"
-                  width="20"
-                  height="20"
-                  class="diagram-content-icon diagram-icon-primary"
-                />
-                <text x="63" y="388" class="diagram-content-runtime-label">
-                  {knownGood.runtime.label}
-                </text>
-                <text
-                  x="63"
-                  y="411"
-                  class="diagram-content-runtime-description">
-                  {knownGood.runtime.description}
-                </text>
-              </g>
-            </g>
-          )
-        }
+        <g>
+          <text x="20" y="44" class="diagram-content-title">
+            {knownGood.title}
+          </text>
+          {
+            knownGood.items.map((item, index) => {
+              const itemLines = splitLines(item);
+              const labelY = itemLines.length > 1 ? 112 : 120;
+              return (
+                <g transform={`translate(0 ${index * 64})`}>
+                  <LucideIcon
+                    icon={knownGoodItemIcons[index] ?? "Circle"}
+                    x="33"
+                    y="102"
+                    width="22"
+                    height="22"
+                    class="diagram-content-icon diagram-icon-primary"
+                  />
+                  <text x="63" y={labelY} class="diagram-content-row-label">
+                    {itemLines.map((line, lineIndex) => (
+                      <tspan x="63" dy={lineIndex === 0 ? 0 : 16}>
+                        {line}
+                      </tspan>
+                    ))}
+                  </text>
+                </g>
+              );
+            })
+          }
+          <g>
+            <LucideIcon
+              icon="Power"
+              x="33"
+              y="374"
+              width="20"
+              height="20"
+              class="diagram-content-icon diagram-icon-primary"
+            />
+            <text x="63" y="388" class="diagram-content-runtime-label">
+              {knownGood.runtime.label}
+            </text>
+            <text x="63" y="411" class="diagram-content-runtime-description">
+              {knownGood.runtime.description}
+            </text>
+          </g>
+        </g>
       </g>
 
       <g transform={getCardTransform(cards.humansAgents)}>
@@ -486,34 +566,34 @@ const diagramViewBox = createViewBox(
           rx="12"
           class="diagram-card">
         </rect>
-        {
-          humansAgents && (
-            <g>
-              <LucideIcon
-                icon="UsersRound"
-                x="25"
-                y="15"
-                width="38"
-                height="38"
-                class="diagram-content-icon diagram-icon-primary"
-              />
-              <text x="85" y="39" class="diagram-content-title">
-                {splitLines(humansAgents.title).map((line, lineIndex) => (
-                  <tspan x="85" dy={lineIndex === 0 ? 0 : 16}>
-                    {line}
-                  </tspan>
-                ))}
-              </text>
-              <text x="85" y="61" class="diagram-content-supporting">
-                {splitLines(humansAgents.description).map((line, lineIndex) => (
-                  <tspan x="85" dy={lineIndex === 0 ? 0 : 16}>
-                    {line}
-                  </tspan>
-                ))}
-              </text>
-            </g>
-          )
-        }
+        <g>
+          <LucideIcon
+            icon="UsersRound"
+            x="25"
+            y="15"
+            width="38"
+            height="38"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text x="85" y="39" class="diagram-content-title">
+            {
+              splitLines(humansAgents.title).map((line, lineIndex) => (
+                <tspan x="85" dy={lineIndex === 0 ? 0 : 16}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+          <text x="85" y="61" class="diagram-content-supporting">
+            {
+              splitLines(humansAgents.description).map((line, lineIndex) => (
+                <tspan x="85" dy={lineIndex === 0 ? 0 : 16}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+        </g>
       </g>
 
       <g transform={getCardTransform(cards.branchPolicy)}>
@@ -525,49 +605,49 @@ const diagramViewBox = createViewBox(
           rx="12"
           class="diagram-card">
         </rect>
-        {
-          branchPolicy && (
-            <g>
-              <LucideIcon
-                icon="ShieldCheck"
-                x="25"
-                y="15"
-                width="38"
-                height="38"
-                class="diagram-content-icon diagram-icon-primary"
-              />
-              <text x="80" y="40" class="diagram-content-title">
-                {splitLines(branchPolicy.title).map((line, lineIndex) => (
-                  <tspan x="80" dy={lineIndex === 0 ? 0 : 16}>
-                    {line}
-                  </tspan>
-                ))}
-              </text>
-              {branchPolicy.items.map((item, index) => {
-                const itemLines = splitLines(item);
-                return (
-                  <g transform={`translate(0 ${index * 32})`}>
-                    <LucideIcon
-                      icon="Check"
-                      x="32"
-                      y="62"
-                      width="24"
-                      height="24"
-                      class="diagram-content-icon diagram-icon-primary"
-                    />
-                    <text x="81" y="78" class="diagram-content-list-item">
-                      {itemLines.map((line, lineIndex) => (
-                        <tspan x="81" dy={lineIndex === 0 ? 0 : 16}>
-                          {line}
-                        </tspan>
-                      ))}
-                    </text>
-                  </g>
-                );
-              })}
-            </g>
-          )
-        }
+        <g>
+          <LucideIcon
+            icon="ShieldCheck"
+            x="25"
+            y="15"
+            width="38"
+            height="38"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text x="80" y="40" class="diagram-content-title">
+            {
+              splitLines(branchPolicy.title).map((line, lineIndex) => (
+                <tspan x="80" dy={lineIndex === 0 ? 0 : 16}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+          {
+            branchPolicy.items.map((item, index) => {
+              const itemLines = splitLines(item);
+              return (
+                <g transform={`translate(0 ${index * 32})`}>
+                  <LucideIcon
+                    icon="Check"
+                    x="32"
+                    y="62"
+                    width="24"
+                    height="24"
+                    class="diagram-content-icon diagram-icon-primary"
+                  />
+                  <text x="81" y="78" class="diagram-content-list-item">
+                    {itemLines.map((line, lineIndex) => (
+                      <tspan x="81" dy={lineIndex === 0 ? 0 : 16}>
+                        {line}
+                      </tspan>
+                    ))}
+                  </text>
+                </g>
+              );
+            })
+          }
+        </g>
       </g>
 
       <g transform={getCardTransform(cards.fork)}>
@@ -579,26 +659,22 @@ const diagramViewBox = createViewBox(
           rx="10"
           class="diagram-card diagram-card-action">
         </rect>
-        {
-          forkAction && (
-            <g>
-              <LucideIcon
-                icon="GitFork"
-                x="23"
-                y="25"
-                width="21"
-                height="21"
-                class="diagram-content-icon diagram-icon-action"
-              />
-              <text
-                x="53"
-                y="41"
-                class="diagram-content-action-label diagram-action-label">
-                {forkAction.label}
-              </text>
-            </g>
-          )
-        }
+        <g>
+          <LucideIcon
+            icon="GitFork"
+            x="23"
+            y="25"
+            width="21"
+            height="21"
+            class="diagram-content-icon diagram-icon-action"
+          />
+          <text
+            x="53"
+            y="41"
+            class="diagram-content-action-label diagram-action-label">
+            {forkAction.label}
+          </text>
+        </g>
       </g>
 
       <g transform={getCardTransform(cards.forkedBranch)}>
@@ -611,90 +687,50 @@ const diagramViewBox = createViewBox(
           class="diagram-card">
         </rect>
         <path d="M25 165H195" class="diagram-divider"></path>
-        {
-          forkedBranch && (
-            <g>
-              <LucideIcon
-                icon="GitFork"
-                x="98"
-                y="20"
-                width="24"
-                height="24"
-                class="diagram-content-icon diagram-icon-primary"
-              />
-              <text
-                x="110"
-                y="74"
-                text-anchor="middle"
-                class="diagram-content-branch-title">
-                {forkedBranch.title}
-              </text>
-              <text
-                x="110"
-                y="106"
-                text-anchor="middle"
-                class="diagram-content-supporting">
-                {forkedBranch.isolationDescription}
-              </text>
-              <text
-                x="110"
-                y="130"
-                text-anchor="middle"
-                class="diagram-content-supporting">
-                {forkedBranch.candidateDescription}
-              </text>
-              <g>
-                <LucideIcon
-                  icon="Power"
-                  x="25"
-                  y="177"
-                  width="19"
-                  height="19"
-                  class="diagram-content-icon diagram-icon-primary"
-                />
-                <text x="54" y="192" class="diagram-content-runtime-label">
-                  {forkedBranch.runtimeStatus}
-                </text>
-              </g>
-            </g>
-          )
-        }
-      </g>
-
-      <g transform={getCardTransform(cards.goldenTest)}>
-        <rect
-          x="0"
-          y="0"
-          width={cards.goldenTest.width}
-          height={cards.goldenTest.height}
-          rx="12"
-          class="diagram-card">
-        </rect>
-        {
-          goldenTest && (
-            <g>
-              <LucideIcon
-                icon="FlaskConical"
-                x="56"
-                y="25"
-                width="28"
-                height="28"
-                class="diagram-content-icon diagram-icon-primary"
-              />
-              <text
-                x="70"
-                y="80"
-                text-anchor="middle"
-                class="diagram-content-card-title">
-                {goldenTestTitleLines.map((line, lineIndex) => (
-                  <tspan x="70" dy={lineIndex === 0 ? 0 : 17}>
-                    {line}
-                  </tspan>
-                ))}
-              </text>
-            </g>
-          )
-        }
+        <g>
+          <LucideIcon
+            icon="GitFork"
+            x="98"
+            y="20"
+            width="24"
+            height="24"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text
+            x="110"
+            y="74"
+            text-anchor="middle"
+            class="diagram-content-branch-title">
+            {forkedBranch.title}
+          </text>
+          <text
+            x="110"
+            y="106"
+            text-anchor="middle"
+            class="diagram-content-supporting">
+            {forkedBranch.isolationDescription}
+          </text>
+          <text
+            x="110"
+            y="130"
+            text-anchor="middle"
+            class="diagram-content-supporting">
+            {forkedBranch.candidateDescription}
+          </text>
+          <g>
+            <LucideIcon
+              icon="Power"
+              x="25"
+              y="177"
+              width="19"
+              height="19"
+              class="diagram-content-icon diagram-icon-primary"
+            />
+            <text x="54" y="192" class="diagram-content-runtime-label">
+              {forkedBranch.runtimeStatus}
+            </text>
+          </g>
+        </g>
       </g>
 
       <g transform={getCardTransform(cards.capsuleDiff)}>
@@ -706,31 +742,63 @@ const diagramViewBox = createViewBox(
           rx="12"
           class="diagram-card">
         </rect>
-        {
-          capsuleDiff && (
-            <g>
-              <LucideIcon
-                icon="FileDiff"
-                x="56"
-                y="25"
-                width="28"
-                height="28"
-                class="diagram-content-icon diagram-icon-primary"
-              />
-              <text
-                x="70"
-                y="80"
-                text-anchor="middle"
-                class="diagram-content-card-title">
-                {capsuleDiffTitleLines.map((line, lineIndex) => (
-                  <tspan x="70" dy={lineIndex === 0 ? 0 : 17}>
-                    {line}
-                  </tspan>
-                ))}
-              </text>
-            </g>
-          )
-        }
+        <g>
+          <LucideIcon
+            icon="FileDiff"
+            x="56"
+            y="25"
+            width="28"
+            height="28"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text
+            x="70"
+            y="80"
+            text-anchor="middle"
+            class="diagram-content-card-title">
+            {
+              capsuleDiffTitleLines.map((line, lineIndex) => (
+                <tspan x="70" dy={lineIndex === 0 ? 0 : 17}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.goldenTest)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.goldenTest.width}
+          height={cards.goldenTest.height}
+          rx="12"
+          class="diagram-card">
+        </rect>
+        <g>
+          <LucideIcon
+            icon="FlaskConical"
+            x="56"
+            y="25"
+            width="28"
+            height="28"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text
+            x="70"
+            y="80"
+            text-anchor="middle"
+            class="diagram-content-card-title">
+            {
+              goldenTestTitleLines.map((line, lineIndex) => (
+                <tspan x="70" dy={lineIndex === 0 ? 0 : 17}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+        </g>
       </g>
 
       <g transform={getCardTransform(cards.promote)}>
@@ -742,26 +810,22 @@ const diagramViewBox = createViewBox(
           rx="10"
           class="diagram-card diagram-card-action">
         </rect>
-        {
-          promoteAction && (
-            <g>
-              <LucideIcon
-                icon="ShieldCheck"
-                x="13"
-                y="25"
-                width="21"
-                height="21"
-                class="diagram-content-icon diagram-icon-action"
-              />
-              <text
-                x="41"
-                y="41"
-                class="diagram-content-action-label diagram-action-label">
-                {promoteAction.label}
-              </text>
-            </g>
-          )
-        }
+        <g>
+          <LucideIcon
+            icon="ShieldCheck"
+            x="13"
+            y="25"
+            width="21"
+            height="21"
+            class="diagram-content-icon diagram-icon-action"
+          />
+          <text
+            x="41"
+            y="41"
+            class="diagram-content-action-label diagram-action-label">
+            {promoteAction.label}
+          </text>
+        </g>
       </g>
 
       <g transform={getCardTransform(cards.productionRoute)}>
@@ -773,53 +837,51 @@ const diagramViewBox = createViewBox(
           rx="12"
           class="diagram-card">
         </rect>
-        {
-          productionRoute && (
-            <g>
-              <LucideIcon
-                icon="Globe2"
-                x="56"
-                y="22"
-                width="28"
-                height="28"
-                class="diagram-content-icon diagram-icon-primary"
-              />
-              <LucideIcon
-                icon="LockKeyhole"
-                x="112"
-                y="14"
-                width="14"
-                height="14"
-                class="diagram-content-icon diagram-icon-primary"
-              />
-              <text
-                x="70"
-                y="75"
-                text-anchor="middle"
-                class="diagram-content-card-title">
-                {productionRouteTitleLines.map((line, lineIndex) => (
-                  <tspan x="70" dy={lineIndex === 0 ? 0 : 17}>
-                    {line}
-                  </tspan>
-                ))}
-              </text>
-              <text
-                x="70"
-                y="120"
-                text-anchor="middle"
-                class="diagram-content-card-body">
-                {productionRoute.routeAliasDescription}
-              </text>
-              <text
-                x="70"
-                y="143"
-                text-anchor="middle"
-                class="diagram-content-card-body">
-                {productionRoute.versionDescription}
-              </text>
-            </g>
-          )
-        }
+        <g>
+          <LucideIcon
+            icon="Globe2"
+            x="56"
+            y="22"
+            width="28"
+            height="28"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <LucideIcon
+            icon="LockKeyhole"
+            x="112"
+            y="14"
+            width="14"
+            height="14"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text
+            x="70"
+            y="75"
+            text-anchor="middle"
+            class="diagram-content-card-title">
+            {
+              productionRouteTitleLines.map((line, lineIndex) => (
+                <tspan x="70" dy={lineIndex === 0 ? 0 : 17}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+          <text
+            x="70"
+            y="120"
+            text-anchor="middle"
+            class="diagram-content-card-body">
+            {productionRoute.routeAliasDescription}
+          </text>
+          <text
+            x="70"
+            y="143"
+            text-anchor="middle"
+            class="diagram-content-card-body">
+            {productionRoute.versionDescription}
+          </text>
+        </g>
       </g>
 
       <g transform={getCardTransform(cards.rollback)}>
@@ -831,69 +893,63 @@ const diagramViewBox = createViewBox(
           rx="12"
           class="diagram-card">
         </rect>
-        {
-          rollback && (
-            <g>
-              <LucideIcon
-                icon="RotateCcw"
-                x="25"
-                y="18"
-                width="29"
-                height="29"
-                class="diagram-content-icon diagram-icon-primary"
-              />
-              <text x="65" y="30" class="diagram-content-card-title">
-                {rollback.title}
-              </text>
-              <text x="65" y="51" class="diagram-content-recovery-status">
-                {rollback.availabilityDescription}
-              </text>
-              <text x="25" y="75" class="diagram-content-recovery-action">
-                {rollback.routeAliasDescription}
-              </text>
-              <text x="25" y="90" class="diagram-content-recovery-destination">
-                {rollback.destinationDescription}
-              </text>
-            </g>
-          )
-        }
+        <g>
+          <LucideIcon
+            icon="RotateCcw"
+            x="25"
+            y="18"
+            width="29"
+            height="29"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text x="65" y="30" class="diagram-content-card-title">
+            {rollback.title}
+          </text>
+          <text x="65" y="51" class="diagram-content-recovery-status">
+            {rollback.availabilityDescription}
+          </text>
+          <text x="25" y="75" class="diagram-content-recovery-action">
+            {rollback.routeAliasDescription}
+          </text>
+          <text x="25" y="90" class="diagram-content-recovery-destination">
+            {rollback.destinationDescription}
+          </text>
+        </g>
       </g>
     </g>
   </svg>
 
-  {
-    processRail && (
-      <div class="diagram-process-rail">
-        <ol class="diagram-process-list" aria-label={processRail.ariaLabel}>
-          {processRail.steps.map((step, index) => (
-            <li
-              class:list={[
-                "diagram-process-step",
-                step.accent === "action" && "diagram-process-step-action",
-              ]}>
-              <span class="diagram-process-card">
-                <LucideIcon
-                  icon={step.icon}
-                  class="diagram-process-step-icon"
-                  aria-hidden="true"
-                  focusable="false"
-                />
-                <span class="diagram-process-step-label">{step.label}</span>
-              </span>
-              {index < processRail.steps.length - 1 && (
-                <LucideIcon
-                  icon="ArrowRight"
-                  class="diagram-process-arrow"
-                  aria-hidden="true"
-                  focusable="false"
-                />
-              )}
-            </li>
-          ))}
-        </ol>
-      </div>
-    )
-  }
+  <div class="diagram-process-rail">
+    <ol class="diagram-process-list" aria-label={processRail.ariaLabel}>
+      {
+        processRail.steps.map((step, index) => (
+          <li
+            class:list={[
+              "diagram-process-step",
+              step.accent === "action" && "diagram-process-step-action",
+            ]}>
+            <span class="diagram-process-card">
+              <LucideIcon
+                icon={step.icon}
+                class="diagram-process-step-icon"
+                aria-hidden="true"
+                focusable="false"
+              />
+              <span class="diagram-process-step-label">{step.label}</span>
+            </span>
+            {index < processRail.steps.length - 1 && (
+              <LucideIcon
+                icon="ArrowRight"
+                class="diagram-process-arrow"
+                aria-hidden="true"
+                focusable="false"
+              />
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
 </div>
 
 <style>
