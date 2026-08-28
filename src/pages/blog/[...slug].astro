@@ -76,7 +76,7 @@ const seoProps = {
 <SiteLayout {...seoProps}>
   <article class="py-16 md:py-24">
     <div class="container mx-auto max-w-3xl">
-      <header class="mb-12 text-center" data-aos="fade-up-sm">
+      <header class="mb-12 text-center">
         {
           post.data.categories.length > 0 && (
             <div class="mb-6 flex justify-center gap-2">
@@ -122,9 +122,7 @@ const seoProps = {
         </div>
       </header>
       <div
-        class="relative mb-16 aspect-21/9 w-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10"
-        data-aos="fade-up-sm"
-        data-aos-delay="100">
+        class="relative mb-16 aspect-21/9 w-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
         <Image
           src={post.data.image}
           alt={post.data.title}
@@ -133,7 +131,7 @@ const seoProps = {
           fetchpriority="high"
         />
       </div>
-      <div class="prose-styles" data-aos="fade-in" data-aos-delay="200">
+      <div class="prose-styles">
         <Content />
       </div>
       {
