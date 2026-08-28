@@ -60,7 +60,6 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
           </path>
         </marker>
       </defs>
-
       <g
         class="product-flow-connectors--wide"
         data-product-flow-connector-paths>
@@ -78,19 +77,19 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
         </path>
         <path
           class="product-flow-connector product-flow-connector--primary"
-          d="M477 315 H504"
+          d="M500 315 H538"
           marker-end="url(#product-flow-arrow-primary)"
           vector-effect="non-scaling-stroke">
         </path>
         <path
           class="product-flow-connector product-flow-connector--primary"
-          d="M717 315 H744"
+          d="M734 315 H764"
           marker-end="url(#product-flow-arrow-primary)"
           vector-effect="non-scaling-stroke">
         </path>
         <path
           class="product-flow-connector product-flow-connector--primary"
-          d="M960 315 H987"
+          d="M970 315 H998"
           marker-end="url(#product-flow-arrow-primary)"
           vector-effect="non-scaling-stroke">
         </path>
@@ -104,18 +103,17 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
           <rect x="-24" y="-10" width="48" height="20" rx="10"></rect>
           <text>fork</text>
         </g>
-        <g class="product-flow-arrow-label" transform="translate(1215 218)">
+        <g class="product-flow-arrow-label" transform="translate(1220 218)">
           <rect x="-30" y="-10" width="60" height="20" rx="10"></rect>
           <text>promote</text>
         </g>
         <g
           class="product-flow-arrow-label product-flow-arrow-label--muted"
           transform="translate(680 31)">
-          <rect x="-39" y="-10" width="78" height="20" rx="10"></rect>
-          <text>rollback</text>
+          <rect x="-116" y="-11" width="238" height="20" rx="10"></rect>
+          <text>rollback to v42 if needed</text>
         </g>
       </g>
-
       <svg
         class="product-flow-connectors--compact"
         data-product-flow-connector-paths
@@ -177,11 +175,9 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
         </g>
       </svg>
     </svg>
-
     <div class="product-flow-label product-flow-label--production">
       <span>Live production</span>
     </div>
-
     <article
       class="product-route-card product-route-card--current"
       aria-label="Current live stable route pointing to approved capsule version 42">
@@ -203,42 +199,25 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
         </p>
       </div>
     </article>
-
     <div class="product-flow-label product-flow-label--change">
       <span>Safe change path</span>
     </div>
-
-    <div class="product-fork-system">
-      <div class="product-editors">
-        <DeckIcon icon="UserRound" label="human" class="product-editor" />
-        <DeckIcon icon="Bot" label="agent" class="product-editor" />
-      </div>
-
-      <div class="product-fork-capsule">
-        <span class="product-fork-layer"></span>
-        <article class="product-fork-card">
-          <DeckIcon icon="GitFork" class="product-fork-icon" />
-          <div class="product-fork-copy">
-            <span class="product-card-kicker">ISOLATED FORK</span>
-            <h3 class="product-fork-title">Capsule <code>v43</code></h3>
-            <p>Edit in isolation</p>
-          </div>
-        </article>
-      </div>
+    <div class="product-fork-capsule">
+      <span class="product-fork-layer"></span>
+      <article class="product-fork-card">
+        <div class="product-editors">
+          <DeckIcon icon="UserRound" label="human" class="product-editor" />
+          <DeckIcon icon="Bot" label="agent" class="product-editor" />
+        </div>
+        <div class="product-fork-copy">
+          <span class="product-card-kicker">KNOWN GOOD</span>
+          <h3 class="product-fork-title">
+            Forked capsule <code>v43</code>
+          </h3>
+          <p>Human or agent edits here</p>
+        </div>
+      </article>
     </div>
-
-    <article class="product-flow-step product-flow-step--test">
-      <LucideIcon
-        icon="FlaskConical"
-        class="product-step-icon"
-        aria-hidden="true"
-        stroke-width="1.5"
-      />
-      <span class="product-card-kicker">RUN</span>
-      <h3>Test</h3>
-      <p>Golden test</p>
-    </article>
-
     <article class="product-flow-step product-flow-step--diff">
       <LucideIcon
         icon="FileDiff"
@@ -247,10 +226,20 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
         stroke-width="1.5"
       />
       <span class="product-card-kicker">REVIEW</span>
-      <h3>Diff</h3>
-      <p>Inspect change</p>
+      <h3>Capsule diff</h3>
+      <p>Inspect changes</p>
     </article>
-
+    <article class="product-flow-step product-flow-step--test">
+      <LucideIcon
+        icon="FlaskConical"
+        class="product-step-icon"
+        aria-hidden="true"
+        stroke-width="1.5"
+      />
+      <span class="product-card-kicker">RUN</span>
+      <h3>Golden test</h3>
+      <p>Capture evidence</p>
+    </article>
     <article class="product-flow-step product-flow-step--approval">
       <LucideIcon
         icon="ShieldCheck"
@@ -262,7 +251,6 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
       <h3>Approval</h3>
       <p>Human or policy</p>
     </article>
-
     <article
       class="product-route-card product-route-card--candidate"
       aria-label="Promoted stable route pointing to approved capsule version 43">
@@ -498,12 +486,13 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
     display: grid;
     min-width: 0;
     gap: 0.25rem;
+    text-align: center;
   }
 
   .product-card-kicker {
     color: var(--color-primary);
     font-family: var(--font-mono);
-    font-size: 0.625rem;
+    font-size: 0.725rem;
     font-weight: 500;
     letter-spacing: 0.11em;
     line-height: 0.875rem;
@@ -524,7 +513,7 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
   }
 
   .product-route-title {
-    font-size: clamp(0.75rem, 1.25cqw, 1rem);
+    font-size: 0.725rem;
     line-height: 1.1;
   }
 
@@ -549,22 +538,8 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
     font-weight: inherit;
   }
 
-  .product-fork-system {
-    display: grid;
-    min-width: 0;
-    min-height: 8.25rem;
-    grid-column: 1;
-    grid-row: 5;
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr);
-    align-items: center;
-    gap: 0.75rem;
-  }
-
   .product-editors {
     display: flex;
-    grid-column: 1;
-    grid-row: 1;
     flex-direction: column;
     justify-content: center;
     gap: 0.5rem;
@@ -591,8 +566,8 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
   .product-fork-capsule {
     position: relative;
     min-width: 0;
-    grid-column: 2;
-    grid-row: 1;
+    grid-column: 1;
+    grid-row: 5;
   }
 
   .product-fork-layer {
@@ -609,7 +584,7 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
     display: grid;
     min-width: 0;
     min-height: 8.25rem;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 0.75rem;
     border: 1.5px solid
@@ -625,25 +600,8 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
     padding: 1rem;
   }
 
-  .product-fork-icon {
-    display: none;
-  }
-
-  .product-fork-icon :global(.deck-icon-wrap) {
-    width: 3rem;
-    height: 3rem;
-    border-color: color-mix(in srgb, var(--color-primary) 44%, transparent);
-    border-radius: 0.625rem;
-    background: color-mix(in srgb, var(--color-primary) 9%, transparent);
-  }
-
-  .product-fork-icon :global(.deck-icon-glyph) {
-    width: 1.2rem;
-    height: 1.2rem;
-  }
-
   .product-fork-title {
-    font-size: clamp(0.75rem, 1.25cqw, 1rem);
+    font-size: 0.725rem;
     line-height: 1.1;
   }
 
@@ -678,7 +636,7 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
   }
 
   .product-flow-step h3 {
-    font-size: clamp(0.75rem, 1.25cqw, 1rem);
+    font-size: 0.725rem;
     line-height: 1.1;
   }
 
@@ -690,12 +648,12 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
     color: var(--color-primary);
   }
 
-  .product-flow-step--test {
+  .product-flow-step--diff {
     grid-column: 2;
     grid-row: 5;
   }
 
-  .product-flow-step--diff {
+  .product-flow-step--test {
     grid-column: 3;
     grid-row: 5;
   }
@@ -720,7 +678,7 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
   @container (min-width: 52rem) {
     .product-flow-stage {
       grid-template-columns:
-        minmax(6.75rem, 0.65fr) minmax(14.5rem, 1.45fr)
+        minmax(6.75rem, 0.65fr) minmax(14.5rem, 1.75fr)
         repeat(3, minmax(0, 1fr));
     }
 
@@ -768,16 +726,8 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
       grid-column: 4 / 6;
     }
 
-    .product-fork-system {
+    .product-fork-capsule {
       grid-column: 2;
-    }
-
-    .product-fork-card {
-      grid-template-columns: auto minmax(0, 1fr);
-    }
-
-    .product-fork-icon {
-      display: inline-grid;
     }
 
     .product-editor :global(.deck-icon-wrap) {
@@ -785,11 +735,11 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
       height: 2.8rem;
     }
 
-    .product-flow-step--test {
+    .product-flow-step--diff {
       grid-column: 3;
     }
 
-    .product-flow-step--diff {
+    .product-flow-step--test {
       grid-column: 4;
     }
 
@@ -799,10 +749,6 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
   }
 
   @container (max-width: 26rem) {
-    .product-flow :global(.deck-icon) {
-      display: none;
-    }
-
     .product-route-card {
       min-height: 5rem;
       gap: 0;
@@ -811,7 +757,6 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
     }
 
     .product-route-icon,
-    .product-fork-icon,
     .product-step-icon {
       display: none;
     }
@@ -830,7 +775,7 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
     .product-route-title,
     .product-fork-title,
     .product-flow-step h3 {
-      font-size: 0.6875rem;
+      font-size: 0.725rem;
     }
 
     .product-route-mapping {
@@ -838,10 +783,6 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
       margin-top: 0;
       font-size: 0.5625rem;
       line-height: 0.8125rem;
-    }
-
-    .product-fork-system {
-      gap: 0.375rem;
     }
 
     .product-editors {
@@ -871,7 +812,7 @@ import LucideIcon from "@/components/helpers/LucideIcon.astro";
     }
 
     .product-fork-card {
-      gap: 0;
+      gap: 0.375rem;
       border-radius: 0.625rem;
       padding: 0.625rem;
     }

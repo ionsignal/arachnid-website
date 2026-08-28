@@ -10,6 +10,7 @@ const deckSlideKeySchema = z.enum([
   "beachhead",
   "evidence",
   "raise",
+  "qr",
 ]);
 
 const deckSlideSchema = z
@@ -23,7 +24,12 @@ const deckSlideSchema = z
         description: z.string().min(1),
       })
       .strict(),
-    footer: z.string().min(1),
+  })
+  .strict();
+
+const deckQrSlideSchema = deckSlideSchema
+  .extend({
+    socialLinks: z.array(z.url()).min(1),
   })
   .strict();
 
@@ -64,92 +70,6 @@ export const collections = {
         subscription: z
           .object({
             enable: z.boolean().optional(),
-          })
-          .optional(),
-        heroProblem: z
-          .object({
-            eyebrow: z.string().min(1),
-            title: z.string().min(1),
-            description: z.string().min(1),
-          })
-          .optional(),
-        heroSolution: z
-          .object({
-            eyebrow: z.string().min(1),
-            title: z.string().min(1),
-            description: z.string().min(1),
-          })
-          .optional(),
-        heroDiagram: z
-          .object({
-            annotations: z.object({
-              humansAgents: z.object({
-                title: z.string(),
-                description: z.string(),
-              }),
-              branchPolicy: z.object({
-                title: z.string(),
-                items: z.array(z.string()).length(3),
-              }),
-            }),
-            knownGood: z.object({
-              title: z.string(),
-              items: z.array(z.string()).length(4),
-              runtime: z.object({
-                label: z.string(),
-                description: z.string(),
-              }),
-            }),
-            fork: z.object({
-              label: z.string(),
-            }),
-            forkedBranch: z.object({
-              title: z.string(),
-              isolationDescription: z.string(),
-              candidateDescription: z.string(),
-              runtimeStatus: z.string(),
-            }),
-            goldenTest: z.object({
-              title: z.string(),
-            }),
-            capsuleDiff: z.object({
-              title: z.string(),
-            }),
-            promote: z.object({
-              label: z.string(),
-            }),
-            productionRoute: z.object({
-              title: z.string(),
-              routeAliasDescription: z.string(),
-              versionDescription: z.string(),
-            }),
-            rollback: z.object({
-              title: z.string(),
-              availabilityDescription: z.string(),
-              routeAliasDescription: z.string(),
-              destinationDescription: z.string(),
-            }),
-            processRail: z
-              .object({
-                ariaLabel: z.string().min(1),
-                steps: z
-                  .array(
-                    z.object({
-                      label: z.string().min(1),
-                      icon: z.enum([
-                        "GitFork",
-                        "PencilLine",
-                        "FlaskConical",
-                        "FileDiff",
-                        "ShieldCheck",
-                        "RotateCcw",
-                      ]),
-                      accent: z.enum(["action", "neutral"]),
-                    }),
-                  )
-                  .min(2),
-              })
-              .optional(),
           })
           .optional(),
         // Explicit Buttons Array (used by hero)
@@ -309,6 +229,7 @@ export const collections = {
             beachhead: deckSlideSchema,
             evidence: deckSlideSchema,
             raise: deckSlideSchema,
+            qr: deckQrSlideSchema,
           })
           .strict(),
       })

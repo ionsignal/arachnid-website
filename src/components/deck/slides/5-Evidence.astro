@@ -84,17 +84,6 @@ const commitmentCount = pilotPartners.length;
           vector-effect="non-scaling-stroke">
         </path>
       </svg>
-      <span class="evidence-commitment-node evidence-commitment-node-mobile">
-      </span>
-      <span
-        class="evidence-commitment-node evidence-commitment-node-desktop evidence-commitment-node-center">
-      </span>
-      <span
-        class="evidence-commitment-node evidence-commitment-node-desktop evidence-commitment-node-top">
-      </span>
-      <span
-        class="evidence-commitment-node evidence-commitment-node-desktop evidence-commitment-node-bottom">
-      </span>
     </div>
     <div class="evidence-partners">
       <ul
@@ -318,27 +307,6 @@ const commitmentCount = pilotPartners.length;
   }
 
   .evidence-commitment-connector-desktop {
-    display: none;
-  }
-
-  .evidence-commitment-node {
-    position: absolute;
-    z-index: 1;
-    display: block;
-    width: 0.5rem;
-    height: 0.5rem;
-    border: 1px solid var(--color-theme-dark);
-    border-radius: 9999px;
-    background: var(--color-primary);
-  }
-
-  .evidence-commitment-node-mobile {
-    bottom: 0;
-    left: 50%;
-    transform: translate(-50%, 50%);
-  }
-
-  .evidence-commitment-node-desktop {
     display: none;
   }
 

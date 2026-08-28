@@ -189,7 +189,7 @@ const artifactSatellites = [
   },
   {
     id: "environment",
-    label: "env vars",
+    label: "config + creds",
     icon: "KeyRound",
     mobile: {
       anchor: {
@@ -292,7 +292,7 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
       }
       <path
         class="fork-connection"
-        d="M650 225 H892 V165"
+        d="M650 225 H892 V140"
         vector-effect="non-scaling-stroke">
       </path>
       <path
@@ -300,8 +300,6 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
         d="M650 314 H740"
         vector-effect="non-scaling-stroke">
       </path>
-      <circle class="capsule-input-node" cx="260" cy="210" r="3"></circle>
-      <circle class="route-output-node" cx="746" cy="314" r="3"></circle>
     </svg>
     <section class="artifact-constellation">
       <svg
@@ -389,7 +387,7 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
       </path>
       <path
         class="capsule-fork-connection"
-        d="M250 24 H125 V76"
+        d="M250 24 H200 V76"
         vector-effect="non-scaling-stroke">
       </path>
       <path
@@ -397,13 +395,6 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
         d="M250 24 H375 V76"
         vector-effect="non-scaling-stroke">
       </path>
-      <circle
-        class="capsule-outcome-node"
-        cx="250"
-        cy="24"
-        r="2.5"
-        vector-effect="non-scaling-stroke">
-      </circle>
     </svg>
     <div class="outcome-zone">
       <div class="fork-system">
@@ -423,11 +414,24 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
         </div>
         <svg
           class="editor-fork-connection"
-          viewBox="0 0 48 104"
+          viewBox="0 0 96 104"
           preserveAspectRatio="none"
           focusable="false">
-          <path d="M8 24 H15 V52 H80" vector-effect="non-scaling-stroke"></path>
-          <path d="M8 80 H15 V52" vector-effect="non-scaling-stroke"></path>
+          <path d="M4 24 H80 V52 H120" vector-effect="non-scaling-stroke">
+          </path>
+          <path d="M4 80 H80 V52" vector-effect="non-scaling-stroke"></path>
+          <g
+            class="editor-fork-label editor-fork-label--human"
+            transform="translate(40, 24)">
+            <rect x="-21" y="-10" width="42" height="20" rx="10"></rect>
+            <text text-anchor="middle" dominant-baseline="middle">edit</text>
+          </g>
+          <g
+            class="editor-fork-label editor-fork-label--agent"
+            transform="translate(40, 80)">
+            <rect x="-21" y="-10" width="42" height="20" rx="10"></rect>
+            <text text-anchor="middle" dominant-baseline="middle">edit</text>
+          </g>
         </svg>
         <div class="fork-capsule">
           <span class="fork-layer"></span>
@@ -683,7 +687,7 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
 
   .capsule-alignment {
     display: grid;
-    width: min(32%, 7rem);
+    width: 50%;
     gap: 0.75rem;
   }
 
@@ -751,24 +755,19 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
     stroke-width: 1px;
   }
 
-  .capsule-outcome-node {
-    fill: color-mix(in srgb, var(--color-light) 42%, transparent);
-    stroke: none;
-  }
-
   .outcome-zone {
     position: relative;
     z-index: 2;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 1rem;
   }
 
   .fork-system {
     position: relative;
     display: grid;
     min-width: 0;
-    grid-template-columns: auto 1rem minmax(0, 1fr);
+    grid-template-columns: auto 6rem minmax(0, 1fr);
     align-items: center;
     gap: 0.375rem;
   }
@@ -812,6 +811,25 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 1px;
+  }
+
+  .editor-fork-label {
+    pointer-events: none;
+  }
+
+  .editor-fork-label rect {
+    fill: color-mix(in srgb, var(--color-theme-dark) 96%, transparent);
+    stroke: color-mix(in srgb, var(--color-primary) 38%, transparent);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .editor-fork-label text {
+    fill: var(--color-primary);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
   }
 
   .fork-capsule {
@@ -983,14 +1001,6 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
       stroke-width: 1.5px;
     }
 
-    .capsule-input-node {
-      fill: var(--color-primary);
-    }
-
-    .route-output-node {
-      fill: var(--color-secondary);
-    }
-
     .artifact-constellation {
       position: absolute;
       z-index: 2;
@@ -1063,7 +1073,7 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
 
     .editor-fork-connection {
       position: absolute;
-      top: 0;
+      top: 6%;
       left: 2.75rem;
       right: 60%;
       width: auto;
@@ -1073,9 +1083,9 @@ function getMobileConnectorPath(artifact: ArtifactSatellite): string {
 
     .fork-capsule {
       position: absolute;
-      top: 22%;
+      top: 10%;
       right: 0;
-      width: 66%;
+      width: 50%;
     }
 
     .fork-card {

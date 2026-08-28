@@ -1,13 +1,9 @@
 ---
-interface Props {
-  content: string;
-}
-
-const { content } = Astro.props;
+const copyrightNotice = "© 2026 IonSignal, Inc. All rights reserved";
 ---
 
 <footer class="deck-slide-footer">
-  <span class="deck-slide-footer-text">{content}</span>
+  <span class="deck-slide-footer-text">{copyrightNotice}</span>
 </footer>
 
 <style>

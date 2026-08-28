@@ -54,6 +54,14 @@ const { label, description } = Astro.props;
         d="M92 346 H185 V319"
         vector-effect="non-scaling-stroke">
       </path>
+      <g class="title-diagram-editor-label" transform="translate(136, 292)">
+        <rect x="-21" y="-10" width="42" height="20" rx="10"></rect>
+        <text text-anchor="middle" dominant-baseline="middle">edit</text>
+      </g>
+      <g class="title-diagram-editor-label" transform="translate(136, 346)">
+        <rect x="-21" y="-10" width="42" height="20" rx="10"></rect>
+        <text text-anchor="middle" dominant-baseline="middle">edit</text>
+      </g>
     </svg>
     <article class="title-diagram-card known-good-card">
       <DeckIcon icon="ShieldCheck" />
@@ -177,6 +185,25 @@ const { label, description } = Astro.props;
     fill: var(--color-primary);
   }
 
+  .title-diagram-editor-label {
+    pointer-events: none;
+  }
+
+  .title-diagram-editor-label rect {
+    fill: color-mix(in srgb, var(--color-theme-dark) 96%, transparent);
+    stroke: color-mix(in srgb, var(--color-primary) 38%, transparent);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .title-diagram-editor-label text {
+    fill: var(--color-primary);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+
   .title-diagram-card {
     position: absolute;
     z-index: 2;
@@ -209,10 +236,10 @@ const { label, description } = Astro.props;
   .title-diagram-kicker {
     color: var(--color-primary);
     font-family: var(--font-mono);
-    font-size: clamp(0.525rem, 1.45cqw, 0.75rem);
+    font-size: 0.725rem;
     font-weight: 500;
     letter-spacing: 0.12em;
-    line-height: 0.875rem;
+    line-height: 1rem;
   }
 
   .title-diagram-card-title {
@@ -222,11 +249,10 @@ const { label, description } = Astro.props;
     overflow-wrap: anywhere;
     color: var(--color-light);
     font-family: var(--font-secondary);
-    font-size: clamp(0.7125rem, 2.85cqw, 1.25rem);
-
+    font-size: 0.725rem;
     font-weight: 500;
     letter-spacing: 0.01em;
-    line-height: 1.12;
+    line-height: 1rem;
   }
 
   .title-diagram-card-title span {

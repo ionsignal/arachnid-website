@@ -12,6 +12,7 @@ import ProductDiagram from "@/components/deck/slides/3-Product.astro";
 import BeachheadDiagram from "@/components/deck/slides/4-Beachhead.astro";
 import EvidenceDiagram from "@/components/deck/slides/5-Evidence.astro";
 import RaiseDiagram from "@/components/deck/slides/6-Raise.astro";
+import QrSlide from "@/components/deck/slides/7-QR.astro";
 import type { DeckContent, DeckSlideKey } from "@/types/deck";
 
 interface Props {
@@ -62,6 +63,9 @@ const slideDefinitions = {
     headingId: "raise-slide-heading",
     diagram: RaiseDiagram,
   },
+  qr: {
+    type: "qr",
+  },
 } as const;
 
 const selectedSlides = slideKeys.map((slideKey) => ({
@@ -88,6 +92,13 @@ const selectedSlides = slideKeys.map((slideKey) => ({
                       content={slideContent}
                       siteTitle={config.site.title}
                     />
+                  </div>
+                );
+              }
+              if (definition.type === "qr") {
+                return (
+                  <div data-scene-deck-scene class="min-w-0">
+                    <QrSlide content={content.slides.qr} />
                   </div>
                 );
               }

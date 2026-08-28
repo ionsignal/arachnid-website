@@ -1,0 +1,1200 @@
+---
+import LucideIcon from "@/components/helpers/LucideIcon.astro";
+
+type DiagramPoint = {
+  x: number;
+  y: number;
+};
+
+type DiagramCard = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  ports: Record<string, DiagramPoint>;
+};
+
+type DiagramLayout = {
+  canvas: {
+    width: number;
+    height: number;
+  };
+  cards: Record<string, DiagramCard>;
+  lanes: {
+    humansAgentsToForkedBranchX: number;
+    branchPolicyToForkedBranchY: number;
+    rollbackRouteY: number;
+  };
+};
+
+interface Props {
+  class?: string;
+  scale?: number;
+}
+
+const { class: className, scale = 1 } = Astro.props;
+const clampedScale = Number.isFinite(scale)
+  ? Math.min(Math.max(scale, 0.5), 1)
+  : 1;
+
+const diagramContent = {
+  annotations: {
+    humansAgents: {
+      title: "Humans + agents",
+      description: "edit forked branches only",
+    },
+    branchPolicy: {
+      title: "Branch policy",
+      items: [
+        "Scoped credentials",
+        "No production secret references",
+        "Side effects controlled",
+      ],
+    },
+  },
+  knownGood: {
+    title: "Known-good capsule",
+    items: [
+      "Workflows + app services",
+      "Models + private assets",
+      "Dependencies + routes",
+      "Snapshots + rollback\nmetadata",
+    ],
+    runtime: {
+      label: "Runtime: on demand",
+      description: "Start / stop when needed",
+    },
+  },
+  fork: {
+    label: "Fork",
+  },
+  forkedBranch: {
+    title: "Forked capsule branch",
+    isolationDescription: "Edit in isolation",
+    candidateDescription: "candidate version",
+    runtimeStatus: "Runtime: running",
+  },
+  capsuleDiff: {
+    title: "Capsule diff side-effect log",
+  },
+  goldenTest: {
+    title: "Golden test evidence",
+  },
+  promote: {
+    label: "Promote",
+  },
+  productionRoute: {
+    title: "Production route alias",
+    routeAliasDescription: "→ approved",
+    versionDescription: "capsule version",
+  },
+  rollback: {
+    title: "Roll back",
+    availabilityDescription: "available if needed",
+    routeAliasDescription: "move route alias",
+    destinationDescription: "to known-good capsule",
+  },
+  processRail: {
+    ariaLabel: "Capsule change process",
+    steps: [
+      {
+        label: "Fork",
+        icon: "GitFork",
+        accent: "action",
+      },
+      {
+        label: "Edit",
+        icon: "PencilLine",
+        accent: "neutral",
+      },
+      {
+        label: "Diff",
+        icon: "FileDiff",
+        accent: "neutral",
+      },
+      {
+        label: "Test",
+        icon: "FlaskConical",
+        accent: "neutral",
+      },
+      {
+        label: "Promote",
+        icon: "ShieldCheck",
+        accent: "action",
+      },
+      {
+        label: "Roll back",
+        icon: "RotateCcw",
+        accent: "neutral",
+      },
+    ],
+  },
+} as const;
+
+const {
+  annotations: { humansAgents, branchPolicy },
+  knownGood,
+  fork: forkAction,
+  forkedBranch,
+  capsuleDiff,
+  goldenTest,
+  promote: promoteAction,
+  productionRoute,
+  rollback,
+  processRail,
+} = diagramContent;
+const knownGoodItemIcons = ["Workflow", "Database", "Route", "History"];
+
+const diagramLayout = {
+  canvas: {
+    width: 1440,
+    height: 740,
+  },
+  cards: {
+    knownGood: {
+      x: 25,
+      y: 200,
+      width: 260,
+      height: 440,
+      ports: {
+        fork: { x: 260, y: 245 },
+        rollback: { x: 120, y: 440 },
+      },
+    },
+    humansAgents: {
+      x: 325,
+      y: 25,
+      width: 300,
+      height: 85,
+      ports: {
+        forkedBranch: { x: 300, y: 42.5 },
+      },
+    },
+    branchPolicy: {
+      x: 325,
+      y: 140,
+      width: 300,
+      height: 167,
+      ports: {
+        forkedBranch: { x: 150, y: 167 },
+      },
+    },
+    fork: {
+      x: 342,
+      y: 410,
+      width: 112,
+      height: 70,
+      ports: {
+        knownGood: { x: 0, y: 35 },
+        forkedBranch: { x: 112, y: 35 },
+      },
+    },
+    forkedBranch: {
+      x: 500,
+      y: 340,
+      width: 220,
+      height: 210,
+      ports: {
+        fork: { x: 0, y: 105 },
+        branchPolicy: { x: 0, y: 50 },
+        humansAgents: { x: 180, y: 0 },
+        capsuleDiff: { x: 220, y: 105 },
+      },
+    },
+    capsuleDiff: {
+      x: 760,
+      y: 380,
+      width: 140,
+      height: 130,
+      ports: {
+        forkedBranch: { x: 0, y: 65 },
+        goldenTest: { x: 140, y: 65 },
+      },
+    },
+    goldenTest: {
+      x: 930,
+      y: 380,
+      width: 140,
+      height: 130,
+      ports: {
+        capsuleDiff: { x: 0, y: 65 },
+        promote: { x: 140, y: 65 },
+      },
+    },
+    promote: {
+      x: 1119,
+      y: 410,
+      width: 112,
+      height: 70,
+      ports: {
+        goldenTest: { x: 0, y: 35 },
+        productionRoute: { x: 112, y: 35 },
+      },
+    },
+    productionRoute: {
+      x: 1280,
+      y: 360,
+      width: 140,
+      height: 170,
+      ports: {
+        promote: { x: 0, y: 85 },
+        rollback: { x: 70, y: 176 },
+      },
+    },
+    rollback: {
+      x: 600,
+      y: 620,
+      width: 250,
+      height: 95,
+      ports: {
+        productionRoute: { x: 258, y: 47 },
+        knownGood: { x: -6, y: 47 },
+      },
+    },
+  },
+  lanes: {
+    humansAgentsToForkedBranchX: 680,
+    branchPolicyToForkedBranchY: 390,
+    rollbackRouteY: 667,
+  },
+} satisfies DiagramLayout;
+
+const { cards, lanes } = diagramLayout;
+
+const splitLines = (value: string) =>
+  value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+const wrapLines = (value: string, maxCharacters: number) => {
+  const lines: string[] = [];
+  for (const sourceLine of splitLines(value)) {
+    let line = "";
+    for (const word of sourceLine.split(/\s+/)) {
+      const candidate = line ? `${line} ${word}` : word;
+      if (line && candidate.length > maxCharacters) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = candidate;
+      }
+    }
+    if (line) lines.push(line);
+  }
+  return lines;
+};
+
+const createScaledViewBox = (
+  width: number,
+  height: number,
+  scaleFactor: number,
+) => {
+  const scaledWidth = width / scaleFactor;
+  const scaledHeight = height / scaleFactor;
+  const offsetX = (width - scaledWidth) / 2;
+  const offsetY = (height - scaledHeight) / 2;
+  return [offsetX, offsetY, scaledWidth, scaledHeight]
+    .map((value) => value.toFixed(3))
+    .join(" ");
+};
+
+const getCardTransform = ({ x, y }: DiagramCard) => `translate(${x} ${y})`;
+
+const toCanvasPoint = (
+  card: DiagramCard,
+  point: DiagramPoint,
+): DiagramPoint => ({
+  x: card.x + point.x,
+  y: card.y + point.y,
+});
+
+const buildConnectorPath = (start: DiagramPoint, ...segments: DiagramPoint[]) =>
+  [start, ...segments]
+    .map((point, index) => `${index === 0 ? "M" : "L"}${point.x} ${point.y}`)
+    .join(" ");
+
+const connectorPaths = {
+  knownGoodToFork: buildConnectorPath(
+    toCanvasPoint(cards.knownGood, cards.knownGood.ports.fork),
+    toCanvasPoint(cards.fork, cards.fork.ports.knownGood),
+  ),
+  forkToForkedBranch: buildConnectorPath(
+    toCanvasPoint(cards.fork, cards.fork.ports.forkedBranch),
+    toCanvasPoint(cards.forkedBranch, cards.forkedBranch.ports.fork),
+  ),
+  forkedBranchToCapsuleDiff: buildConnectorPath(
+    toCanvasPoint(cards.forkedBranch, cards.forkedBranch.ports.capsuleDiff),
+    toCanvasPoint(cards.capsuleDiff, cards.capsuleDiff.ports.forkedBranch),
+  ),
+  capsuleDiffToGoldenTest: buildConnectorPath(
+    toCanvasPoint(cards.capsuleDiff, cards.capsuleDiff.ports.goldenTest),
+    toCanvasPoint(cards.goldenTest, cards.goldenTest.ports.capsuleDiff),
+  ),
+  goldenTestToPromote: buildConnectorPath(
+    toCanvasPoint(cards.goldenTest, cards.goldenTest.ports.promote),
+    toCanvasPoint(cards.promote, cards.promote.ports.goldenTest),
+  ),
+  promoteToProductionRoute: buildConnectorPath(
+    toCanvasPoint(cards.promote, cards.promote.ports.productionRoute),
+    toCanvasPoint(cards.productionRoute, cards.productionRoute.ports.promote),
+  ),
+  humansAgentsToForkedBranch: buildConnectorPath(
+    toCanvasPoint(cards.humansAgents, cards.humansAgents.ports.forkedBranch),
+    {
+      x: lanes.humansAgentsToForkedBranchX,
+      y: toCanvasPoint(
+        cards.humansAgents,
+        cards.humansAgents.ports.forkedBranch,
+      ).y,
+    },
+    toCanvasPoint(cards.forkedBranch, cards.forkedBranch.ports.humansAgents),
+  ),
+  branchPolicyToForkedBranch: buildConnectorPath(
+    toCanvasPoint(cards.branchPolicy, cards.branchPolicy.ports.forkedBranch),
+    {
+      x: toCanvasPoint(
+        cards.branchPolicy,
+        cards.branchPolicy.ports.forkedBranch,
+      ).x,
+      y: lanes.branchPolicyToForkedBranchY,
+    },
+    toCanvasPoint(cards.forkedBranch, cards.forkedBranch.ports.branchPolicy),
+  ),
+  productionRouteToRollback: buildConnectorPath(
+    toCanvasPoint(cards.productionRoute, cards.productionRoute.ports.rollback),
+    {
+      x: toCanvasPoint(
+        cards.productionRoute,
+        cards.productionRoute.ports.rollback,
+      ).x,
+      y: lanes.rollbackRouteY,
+    },
+    toCanvasPoint(cards.rollback, cards.rollback.ports.productionRoute),
+  ),
+  rollbackToKnownGood: buildConnectorPath(
+    toCanvasPoint(cards.rollback, cards.rollback.ports.knownGood),
+    {
+      x: toCanvasPoint(cards.knownGood, cards.knownGood.ports.rollback).x,
+      y: lanes.rollbackRouteY,
+    },
+    toCanvasPoint(cards.knownGood, cards.knownGood.ports.rollback),
+  ),
+};
+
+const capsuleDiffTitleLines = wrapLines(capsuleDiff.title, 15);
+const goldenTestTitleLines = wrapLines(goldenTest.title, 16);
+const productionRouteTitleLines = wrapLines(productionRoute.title, 14);
+const diagramViewBox = createScaledViewBox(
+  diagramLayout.canvas.width,
+  diagramLayout.canvas.height,
+  clampedScale,
+);
+---
+
+<div class:list={["hero-product-diagram relative z-30 w-full", className]}>
+  <svg
+    viewBox={diagramViewBox}
+    preserveAspectRatio="xMidYMid meet"
+    aria-hidden="true"
+    focusable="false"
+    class="block h-auto w-full rounded-t-2xl md:rounded-t-3xl">
+    <defs>
+      <marker
+        id="diagram-arrow"
+        viewBox="0 0 10 10"
+        refX="10"
+        refY="5"
+        markerWidth="6"
+        markerHeight="6"
+        orient="auto">
+        <path class="diagram-arrow" d="M 0 0 L 10 5 L 0 10 z"></path>
+      </marker>
+    </defs>
+
+    <g class="diagram-connectors">
+      <path
+        d={connectorPaths.knownGoodToFork}
+        class="diagram-connector"
+        marker-end="url(#diagram-arrow)">
+      </path>
+      <path
+        d={connectorPaths.forkToForkedBranch}
+        class="diagram-connector"
+        marker-end="url(#diagram-arrow)">
+      </path>
+      <path
+        d={connectorPaths.forkedBranchToCapsuleDiff}
+        class="diagram-connector"
+        marker-end="url(#diagram-arrow)">
+      </path>
+      <path
+        d={connectorPaths.capsuleDiffToGoldenTest}
+        class="diagram-connector"
+        marker-end="url(#diagram-arrow)">
+      </path>
+      <path
+        d={connectorPaths.goldenTestToPromote}
+        class="diagram-connector"
+        marker-end="url(#diagram-arrow)">
+      </path>
+      <path
+        d={connectorPaths.promoteToProductionRoute}
+        class="diagram-connector"
+        marker-end="url(#diagram-arrow)">
+      </path>
+      <path
+        d={connectorPaths.humansAgentsToForkedBranch}
+        class="diagram-connector diagram-connector-dashed"
+        marker-end="url(#diagram-arrow)">
+      </path>
+      <path
+        d={connectorPaths.branchPolicyToForkedBranch}
+        class="diagram-connector diagram-connector-dashed"
+        marker-end="url(#diagram-arrow)">
+      </path>
+      <path
+        d={connectorPaths.productionRouteToRollback}
+        class="diagram-connector diagram-connector-dashed"
+        marker-end="url(#diagram-arrow)">
+      </path>
+      <path
+        d={connectorPaths.rollbackToKnownGood}
+        class="diagram-connector diagram-connector-dashed"
+        marker-end="url(#diagram-arrow)">
+      </path>
+    </g>
+
+    <g class="diagram-nodes">
+      <g transform={getCardTransform(cards.knownGood)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.knownGood.width}
+          height={cards.knownGood.height}
+          rx="14"
+          class="diagram-card">
+        </rect>
+        <rect
+          x="20"
+          y="85"
+          width="220"
+          height="55"
+          rx="8"
+          class="diagram-card-inset">
+        </rect>
+        <rect
+          x="20"
+          y="150"
+          width="220"
+          height="55"
+          rx="8"
+          class="diagram-card-inset">
+        </rect>
+        <rect
+          x="20"
+          y="215"
+          width="220"
+          height="55"
+          rx="8"
+          class="diagram-card-inset">
+        </rect>
+        <rect
+          x="20"
+          y="280"
+          width="220"
+          height="55"
+          rx="8"
+          class="diagram-card-inset">
+        </rect>
+        <path d="M20 66H240" class="diagram-divider"></path>
+        <path d="M20 355H240" class="diagram-divider"></path>
+        <g>
+          <text x="20" y="44" class="diagram-content-title">
+            {knownGood.title}
+          </text>
+          {
+            knownGood.items.map((item, index) => {
+              const itemLines = splitLines(item);
+              const labelY = itemLines.length > 1 ? 112 : 120;
+              return (
+                <g transform={`translate(0 ${index * 64})`}>
+                  <LucideIcon
+                    icon={knownGoodItemIcons[index] ?? "Circle"}
+                    x="33"
+                    y="102"
+                    width="22"
+                    height="22"
+                    class="diagram-content-icon diagram-icon-primary"
+                  />
+                  <text x="63" y={labelY} class="diagram-content-row-label">
+                    {itemLines.map((line, lineIndex) => (
+                      <tspan x="63" dy={lineIndex === 0 ? 0 : 16}>
+                        {line}
+                      </tspan>
+                    ))}
+                  </text>
+                </g>
+              );
+            })
+          }
+          <g>
+            <LucideIcon
+              icon="Power"
+              x="33"
+              y="374"
+              width="20"
+              height="20"
+              class="diagram-content-icon diagram-icon-primary"
+            />
+            <text x="63" y="388" class="diagram-content-runtime-label">
+              {knownGood.runtime.label}
+            </text>
+            <text x="63" y="411" class="diagram-content-runtime-description">
+              {knownGood.runtime.description}
+            </text>
+          </g>
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.humansAgents)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.humansAgents.width}
+          height={cards.humansAgents.height}
+          rx="12"
+          class="diagram-card">
+        </rect>
+        <g>
+          <LucideIcon
+            icon="UsersRound"
+            x="25"
+            y="15"
+            width="38"
+            height="38"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text x="85" y="39" class="diagram-content-title">
+            {
+              splitLines(humansAgents.title).map((line, lineIndex) => (
+                <tspan x="85" dy={lineIndex === 0 ? 0 : 16}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+          <text x="85" y="61" class="diagram-content-supporting">
+            {
+              splitLines(humansAgents.description).map((line, lineIndex) => (
+                <tspan x="85" dy={lineIndex === 0 ? 0 : 16}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.branchPolicy)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.branchPolicy.width}
+          height={cards.branchPolicy.height}
+          rx="12"
+          class="diagram-card">
+        </rect>
+        <g>
+          <LucideIcon
+            icon="ShieldCheck"
+            x="25"
+            y="15"
+            width="38"
+            height="38"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text x="80" y="40" class="diagram-content-title">
+            {
+              splitLines(branchPolicy.title).map((line, lineIndex) => (
+                <tspan x="80" dy={lineIndex === 0 ? 0 : 16}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+          {
+            branchPolicy.items.map((item, index) => {
+              const itemLines = splitLines(item);
+              return (
+                <g transform={`translate(0 ${index * 32})`}>
+                  <LucideIcon
+                    icon="Check"
+                    x="32"
+                    y="62"
+                    width="24"
+                    height="24"
+                    class="diagram-content-icon diagram-icon-primary"
+                  />
+                  <text x="81" y="78" class="diagram-content-list-item">
+                    {itemLines.map((line, lineIndex) => (
+                      <tspan x="81" dy={lineIndex === 0 ? 0 : 16}>
+                        {line}
+                      </tspan>
+                    ))}
+                  </text>
+                </g>
+              );
+            })
+          }
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.fork)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.fork.width}
+          height={cards.fork.height}
+          rx="10"
+          class="diagram-card diagram-card-action">
+        </rect>
+        <g>
+          <LucideIcon
+            icon="GitFork"
+            x="23"
+            y="25"
+            width="21"
+            height="21"
+            class="diagram-content-icon diagram-icon-action"
+          />
+          <text
+            x="53"
+            y="41"
+            class="diagram-content-action-label diagram-action-label">
+            {forkAction.label}
+          </text>
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.forkedBranch)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.forkedBranch.width}
+          height={cards.forkedBranch.height}
+          rx="14"
+          class="diagram-card">
+        </rect>
+        <path d="M25 165H195" class="diagram-divider"></path>
+        <g>
+          <LucideIcon
+            icon="GitFork"
+            x="98"
+            y="20"
+            width="24"
+            height="24"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text
+            x="110"
+            y="74"
+            text-anchor="middle"
+            class="diagram-content-branch-title">
+            {forkedBranch.title}
+          </text>
+          <text
+            x="110"
+            y="106"
+            text-anchor="middle"
+            class="diagram-content-supporting">
+            {forkedBranch.isolationDescription}
+          </text>
+          <text
+            x="110"
+            y="130"
+            text-anchor="middle"
+            class="diagram-content-supporting">
+            {forkedBranch.candidateDescription}
+          </text>
+          <g>
+            <LucideIcon
+              icon="Power"
+              x="25"
+              y="177"
+              width="19"
+              height="19"
+              class="diagram-content-icon diagram-icon-primary"
+            />
+            <text x="54" y="192" class="diagram-content-runtime-label">
+              {forkedBranch.runtimeStatus}
+            </text>
+          </g>
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.capsuleDiff)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.capsuleDiff.width}
+          height={cards.capsuleDiff.height}
+          rx="12"
+          class="diagram-card">
+        </rect>
+        <g>
+          <LucideIcon
+            icon="FileDiff"
+            x="56"
+            y="25"
+            width="28"
+            height="28"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text
+            x="70"
+            y="80"
+            text-anchor="middle"
+            class="diagram-content-card-title">
+            {
+              capsuleDiffTitleLines.map((line, lineIndex) => (
+                <tspan x="70" dy={lineIndex === 0 ? 0 : 17}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.goldenTest)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.goldenTest.width}
+          height={cards.goldenTest.height}
+          rx="12"
+          class="diagram-card">
+        </rect>
+        <g>
+          <LucideIcon
+            icon="FlaskConical"
+            x="56"
+            y="25"
+            width="28"
+            height="28"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text
+            x="70"
+            y="80"
+            text-anchor="middle"
+            class="diagram-content-card-title">
+            {
+              goldenTestTitleLines.map((line, lineIndex) => (
+                <tspan x="70" dy={lineIndex === 0 ? 0 : 17}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.promote)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.promote.width}
+          height={cards.promote.height}
+          rx="10"
+          class="diagram-card diagram-card-action">
+        </rect>
+        <g>
+          <LucideIcon
+            icon="ShieldCheck"
+            x="13"
+            y="25"
+            width="21"
+            height="21"
+            class="diagram-content-icon diagram-icon-action"
+          />
+          <text
+            x="41"
+            y="41"
+            class="diagram-content-action-label diagram-action-label">
+            {promoteAction.label}
+          </text>
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.productionRoute)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.productionRoute.width}
+          height={cards.productionRoute.height}
+          rx="12"
+          class="diagram-card">
+        </rect>
+        <g>
+          <LucideIcon
+            icon="Globe2"
+            x="56"
+            y="22"
+            width="28"
+            height="28"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <LucideIcon
+            icon="LockKeyhole"
+            x="112"
+            y="14"
+            width="14"
+            height="14"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text
+            x="70"
+            y="75"
+            text-anchor="middle"
+            class="diagram-content-card-title">
+            {
+              productionRouteTitleLines.map((line, lineIndex) => (
+                <tspan x="70" dy={lineIndex === 0 ? 0 : 17}>
+                  {line}
+                </tspan>
+              ))
+            }
+          </text>
+          <text
+            x="70"
+            y="120"
+            text-anchor="middle"
+            class="diagram-content-card-body">
+            {productionRoute.routeAliasDescription}
+          </text>
+          <text
+            x="70"
+            y="143"
+            text-anchor="middle"
+            class="diagram-content-card-body">
+            {productionRoute.versionDescription}
+          </text>
+        </g>
+      </g>
+
+      <g transform={getCardTransform(cards.rollback)}>
+        <rect
+          x="0"
+          y="0"
+          width={cards.rollback.width}
+          height={cards.rollback.height}
+          rx="12"
+          class="diagram-card">
+        </rect>
+        <g>
+          <LucideIcon
+            icon="RotateCcw"
+            x="25"
+            y="18"
+            width="29"
+            height="29"
+            class="diagram-content-icon diagram-icon-primary"
+          />
+          <text x="65" y="30" class="diagram-content-card-title">
+            {rollback.title}
+          </text>
+          <text x="65" y="51" class="diagram-content-recovery-status">
+            {rollback.availabilityDescription}
+          </text>
+          <text x="25" y="75" class="diagram-content-recovery-action">
+            {rollback.routeAliasDescription}
+          </text>
+          <text x="25" y="90" class="diagram-content-recovery-destination">
+            {rollback.destinationDescription}
+          </text>
+        </g>
+      </g>
+    </g>
+  </svg>
+
+  <div class="diagram-process-rail">
+    <ol class="diagram-process-list" aria-label={processRail.ariaLabel}>
+      {
+        processRail.steps.map((step, index) => (
+          <li
+            class:list={[
+              "diagram-process-step",
+              step.accent === "action" && "diagram-process-step-action",
+            ]}>
+            <span class="diagram-process-card">
+              <LucideIcon
+                icon={step.icon}
+                class="diagram-process-step-icon"
+                aria-hidden="true"
+                focusable="false"
+              />
+              <span class="diagram-process-step-label">{step.label}</span>
+            </span>
+            {index < processRail.steps.length - 1 && (
+              <LucideIcon
+                icon="ArrowRight"
+                class="diagram-process-arrow"
+                aria-hidden="true"
+                focusable="false"
+              />
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</div>
+
+<style>
+  .hero-product-diagram {
+    --diagram-action: var(--color-secondary);
+    --diagram-text-primary: var(--color-light);
+    --diagram-text-supporting: var(--color-text-default);
+  }
+
+  .hero-product-diagram svg {
+    font-family: var(--font-primary);
+    text-rendering: geometricPrecision;
+  }
+
+  .diagram-card {
+    fill: var(--color-theme-dark);
+    fill-opacity: 0.72;
+    stroke: var(--color-light);
+    stroke-opacity: 0.26;
+    stroke-width: 1.2;
+  }
+
+  .diagram-card-action {
+    fill: var(--diagram-action);
+    fill-opacity: 0.07;
+    stroke: var(--diagram-action);
+    stroke-opacity: 0.9;
+    stroke-width: 1.4;
+  }
+
+  .diagram-card-inset {
+    fill: var(--color-body);
+    fill-opacity: 0.4;
+    stroke: var(--color-light);
+    stroke-opacity: 0.22;
+    stroke-width: 1;
+  }
+
+  .diagram-connector {
+    fill: none;
+    stroke: var(--color-light);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-opacity: 0.5;
+    stroke-width: 1.4;
+  }
+
+  .diagram-connector-dashed {
+    stroke-dasharray: 4 5;
+  }
+
+  .diagram-arrow {
+    fill: var(--color-light);
+    fill-opacity: 0.5;
+  }
+
+  .diagram-divider {
+    fill: none;
+    stroke: var(--color-light);
+    stroke-linecap: round;
+    stroke-opacity: 0.18;
+    stroke-width: 1;
+  }
+
+  .diagram-content-title {
+    fill: var(--diagram-text-primary);
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+  }
+
+  .diagram-content-branch-title {
+    fill: var(--diagram-text-primary);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.15px;
+  }
+
+  .diagram-content-action-label {
+    fill: var(--diagram-text-primary);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .diagram-action-label {
+    fill: var(--diagram-action);
+  }
+
+  .diagram-content-supporting {
+    fill: var(--diagram-text-supporting);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .diagram-content-list-item,
+  .diagram-content-row-label {
+    fill: var(--diagram-text-primary);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .diagram-content-runtime-label {
+    fill: var(--color-primary);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .diagram-content-runtime-description {
+    fill: var(--diagram-text-supporting);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .diagram-content-card-title {
+    fill: var(--diagram-text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.1px;
+  }
+
+  .diagram-content-card-body {
+    fill: var(--diagram-text-supporting);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .diagram-content-recovery-status {
+    fill: var(--color-primary);
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+
+  .diagram-content-recovery-action {
+    fill: var(--diagram-text-primary);
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+
+  .diagram-content-recovery-destination {
+    fill: var(--diagram-text-supporting);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .diagram-content-icon {
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+  }
+
+  .diagram-icon-primary {
+    color: var(--color-primary);
+  }
+
+  .diagram-icon-action {
+    color: var(--diagram-action);
+  }
+
+  .diagram-process-rail {
+    padding: 0.875rem clamp(1rem, 3vw, 2rem) 1.25rem;
+  }
+
+  .diagram-process-list {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 62rem;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+
+  .diagram-process-step {
+    --diagram-process-accent: var(--color-light);
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    align-items: center;
+    padding-right: clamp(0.5rem, 2vw, 1.5rem);
+  }
+
+  .diagram-process-step:last-child {
+    padding-right: 0;
+  }
+
+  .diagram-process-step-action {
+    --diagram-process-accent: var(--diagram-action);
+  }
+
+  .diagram-process-card {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid
+      color-mix(in srgb, var(--diagram-process-accent) 26%, transparent);
+    border-radius: 0.375rem;
+    background: color-mix(in srgb, var(--color-theme-dark) 72%, transparent);
+    padding: 0.375rem 0.5rem;
+    color: var(--diagram-text-primary);
+  }
+
+  .diagram-process-step-action .diagram-process-card {
+    border-color: color-mix(in srgb, var(--diagram-action) 42%, transparent);
+    background: color-mix(
+      in srgb,
+      var(--diagram-action) 7%,
+      var(--color-theme-dark)
+    );
+  }
+
+  .diagram-process-step-icon {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    color: var(--diagram-process-accent);
+    stroke-width: 1.8;
+  }
+
+  .diagram-process-step-label {
+    overflow: hidden;
+    min-width: 0;
+    color: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .diagram-process-arrow {
+    position: absolute;
+    top: 50%;
+    right: clamp(0.1rem, 0.4vw, 0.35rem);
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-light);
+    opacity: 0.5;
+    transform: translateY(-50%);
+    stroke-width: 1.8;
+  }
+</style>
