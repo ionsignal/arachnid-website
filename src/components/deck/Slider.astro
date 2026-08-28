@@ -76,6 +76,7 @@ const { class: className, ...attributes } = Astro.props;
 
     connectedCallback() {
       this.teardown();
+      this.dataset.sceneDeckPlayback = "paused";
       this.scenes = Array.from(
         this.querySelectorAll<HTMLElement>("[data-scene-deck-scene]"),
       );
@@ -215,6 +216,7 @@ const { class: className, ...attributes } = Astro.props;
     }
 
     private scheduleAutomaticAdvance() {
+      this.updatePlaybackState();
       if (
         !this.canAutoplay() ||
         this.isTransitioning ||
@@ -418,6 +420,7 @@ const { class: className, ...attributes } = Astro.props;
       );
       this.clearSceneTimer();
       this.setProgress(elapsedSceneDuration / sceneDurationMs);
+      this.updatePlaybackState();
     }
 
     private resetSceneTimer() {
@@ -446,7 +449,13 @@ const { class: className, ...attributes } = Astro.props;
       );
     }
 
+    private updatePlaybackState() {
+      this.dataset.sceneDeckPlayback =
+        this.canAutoplay() && !this.isTransitioning ? "running" : "paused";
+    }
+
     private updateControlStates() {
+      this.updatePlaybackState();
       const navigationDisabled = this.scenes.length < 2 || this.isTransitioning;
       const autoplayUnavailable =
         this.scenes.length < 2 || this.prefersReducedMotion;
@@ -561,6 +570,7 @@ const { class: className, ...attributes } = Astro.props;
       this.isTransitioning = false;
       this.isAutoplayPaused = false;
       this.prefersReducedMotion = false;
+      this.removeAttribute("data-scene-deck-playback");
     }
   }
 
