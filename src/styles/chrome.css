@@ -23,6 +23,10 @@
 
   &:has(#nav-menu.open) {
     @apply bg-body;
+
+    #nav-menu {
+      @apply bg-body;
+    }
   }
 
   &.sticky-header {
@@ -31,10 +35,6 @@
 
   .header-nav {
     @apply relative;
-  }
-
-  #nav-menu {
-    @apply bg-body;
   }
 
   .header-nav-row {
