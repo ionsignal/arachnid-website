@@ -49,17 +49,28 @@ function escapeHtml(value: string): string {
   });
 }
 
-function renderTree(nodes: DocTocNode[], nested: boolean): string {
+function renderTree(
+  nodes: DocTocNode[],
+  nested: boolean,
+  initiallyActiveSlug?: string,
+): string {
   const listClass = nested
     ? "docs-toc-list docs-toc-list-nested"
     : "docs-toc-list";
   const items = nodes
     .map((node) => {
       const children =
-        node.children.length > 0 ? renderTree(node.children, true) : "";
+        node.children.length > 0
+          ? renderTree(node.children, true, initiallyActiveSlug)
+          : "";
       const slug = escapeHtml(node.slug);
       const text = escapeHtml(node.text);
-      return `<li class="docs-toc-item"><a href="#${slug}" class="docs-toc-link" data-docs-toc-link="${slug}">${text}</a>${children}</li>`;
+      const isInitiallyActive = node.slug === initiallyActiveSlug;
+      const linkClass = isInitiallyActive
+        ? "docs-toc-link active"
+        : "docs-toc-link";
+      const ariaCurrent = isInitiallyActive ? ' aria-current="location"' : "";
+      return `<li class="docs-toc-item"><a href="#${slug}" class="${linkClass}" data-docs-toc-link="${slug}"${ariaCurrent}>${text}</a>${children}</li>`;
     })
     .join("");
   return `<ul class="${listClass}">${items}</ul>`;
@@ -70,13 +81,17 @@ const filtered = tocEnabled
   : [];
 const tree = buildTocTree(filtered);
 const shouldRender = tocEnabled && tree.length > 0;
-const treeHtml = shouldRender ? renderTree(tree, false) : "";
+const initiallyActiveSlug = filtered[0]?.slug;
+const treeHtml = shouldRender
+  ? renderTree(tree, false, initiallyActiveSlug)
+  : "";
 ---
 
 {
   shouldRender && (
     <nav
       class="docs-toc has-customized-scrollbar"
+      data-docs-toc
       data-hs-scrollspy="#docs-content"
       style="--scrollspy-offset: 120;"
       aria-label="On this page">
@@ -85,3 +100,129 @@ const treeHtml = shouldRender ? renderTree(tree, false) : "";
     </nav>
   )
 }
+
+<script>
+  let docsTocController: AbortController | null = null;
+
+  function getCurrentHashSlug(): string | null {
+    const encodedSlug = window.location.hash.slice(1);
+    if (!encodedSlug) return null;
+    try {
+      return decodeURIComponent(encodedSlug);
+    } catch {
+      return encodedSlug;
+    }
+  }
+
+  function getTocLinks(toc: HTMLElement): HTMLAnchorElement[] {
+    return Array.from(
+      toc.querySelectorAll<HTMLAnchorElement>("[data-docs-toc-link]"),
+    );
+  }
+
+  function findHashLink(toc: HTMLElement): HTMLAnchorElement | undefined {
+    const currentHashSlug = getCurrentHashSlug();
+    if (!currentHashSlug) return undefined;
+    return getTocLinks(toc).find(
+      (link) => link.dataset.docsTocLink === currentHashSlug,
+    );
+  }
+
+  function setActiveTocLink(
+    toc: HTMLElement,
+    activeLink: HTMLAnchorElement,
+  ): void {
+    getTocLinks(toc).forEach((link) => {
+      const isActive = link === activeLink;
+      link.classList.toggle("active", isActive);
+      if (isActive) {
+        link.setAttribute("aria-current", "location");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  }
+
+  function initializeDocsTocState(): void {
+    docsTocController?.abort();
+    const controller = new AbortController();
+    docsTocController = controller;
+    const tocElements = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-docs-toc]"),
+    );
+
+    const synchronizeHashState = () => {
+      tocElements.forEach((toc) => {
+        const hashLink = findHashLink(toc);
+        if (hashLink) {
+          setActiveTocLink(toc, hashLink);
+        }
+      });
+    };
+
+    tocElements.forEach((toc) => {
+      const links = getTocLinks(toc);
+      const initialLink =
+        findHashLink(toc) ??
+        links.find((link) => link.classList.contains("active")) ??
+        links[0];
+
+      if (initialLink) {
+        setActiveTocLink(toc, initialLink);
+      }
+
+      toc.addEventListener(
+        "click",
+        (event) => {
+          const target = event.target;
+          if (!(target instanceof Element)) return;
+          const link = target.closest<HTMLAnchorElement>(
+            "[data-docs-toc-link]",
+          );
+          if (!link || !toc.contains(link)) return;
+          setActiveTocLink(toc, link);
+        },
+        { signal: controller.signal },
+      );
+
+      toc.addEventListener(
+        "afterScroll.hs.scrollspy",
+        (event) => {
+          const target = event.target;
+          if (!(target instanceof Element)) return;
+          const link = target.closest<HTMLAnchorElement>(
+            "[data-docs-toc-link]",
+          );
+          if (!link || !toc.contains(link)) return;
+          setActiveTocLink(toc, link);
+        },
+        { signal: controller.signal },
+      );
+    });
+
+    window.addEventListener("hashchange", synchronizeHashState, {
+      signal: controller.signal,
+    });
+    window.addEventListener("popstate", synchronizeHashState, {
+      signal: controller.signal,
+    });
+  }
+
+  function teardownDocsTocState(): void {
+    docsTocController?.abort();
+    docsTocController = null;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeDocsTocState, {
+      once: true,
+    });
+  } else {
+    initializeDocsTocState();
+  }
+
+  document.addEventListener("astro:page-load", initializeDocsTocState);
+  document.addEventListener("astro:before-swap", teardownDocsTocState);
+  window.addEventListener("pagehide", teardownDocsTocState);
+  window.addEventListener("pageshow", initializeDocsTocState);
+</script>

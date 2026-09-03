@@ -3,12 +3,13 @@
 ---
 
 <script>
+  import HSOverlay from "@preline/overlay/non-auto";
   import HSAccordion from "@preline/accordion/non-auto";
   import HSCollapse from "@preline/collapse/non-auto";
-  import HSOverlay from "@preline/overlay/non-auto";
   import HSTabs from "@preline/tabs/non-auto";
   import HSScrollspy from "@preline/scrollspy/non-auto";
   import HSDropdown from "@preline/dropdown/non-auto";
+
   import { animate, inView } from "motion";
 
   const animationMap = {
@@ -19,11 +20,14 @@
     "fade-in": { opacity: [0, 1] },
   };
 
+  const docsDesktopBreakpointQuery = "(min-width: 1024px)";
   const motionObserverCleanups: Array<() => void> = [];
   const horizontalScrollCleanups: Array<() => void> = [];
 
   let prelineInitialized = false;
   let behaviorInitialized = false;
+  let docsSidebarBreakpointController: AbortController | null = null;
+  let pendingDocsSidebarForceCloseFrameId: number | null = null;
 
   function isAnimationName(value: string): value is keyof typeof animationMap {
     return Object.prototype.hasOwnProperty.call(animationMap, value);
@@ -45,13 +49,70 @@
 
   function initializePreline() {
     if (prelineInitialized) return;
+    HSOverlay.autoInit();
     HSAccordion.autoInit();
     HSCollapse.autoInit();
-    HSOverlay.autoInit();
     HSTabs.autoInit();
     HSScrollspy.autoInit();
     HSDropdown.autoInit();
     prelineInitialized = true;
+  }
+
+  function forceCloseOpenDocsSidebar(docsSidebar: HTMLElement): void {
+    if (!docsSidebar.classList.contains("opened")) return;
+    const overlayInstance = HSOverlay.getInstance(docsSidebar, true);
+    if (!overlayInstance) return;
+    void overlayInstance.element.close(true);
+  }
+
+  function teardownDocsSidebarBreakpointWatcher(): void {
+    docsSidebarBreakpointController?.abort();
+    docsSidebarBreakpointController = null;
+    if (pendingDocsSidebarForceCloseFrameId !== null) {
+      window.cancelAnimationFrame(pendingDocsSidebarForceCloseFrameId);
+      pendingDocsSidebarForceCloseFrameId = null;
+    }
+  }
+
+  function initializeDocsSidebarBreakpointWatcher(): void {
+    teardownDocsSidebarBreakpointWatcher();
+    const docsSidebar = document.querySelector<HTMLElement>("#docs-sidebar");
+    if (!docsSidebar) return;
+    const desktopBreakpoint = window.matchMedia(docsDesktopBreakpointQuery);
+    const controller = new AbortController();
+    docsSidebarBreakpointController = controller;
+    const forceCloseWhenDesktop = () => {
+      if (!desktopBreakpoint.matches) return;
+      forceCloseOpenDocsSidebar(docsSidebar);
+    };
+    const scheduleForceCloseWhenDesktop = () => {
+      if (pendingDocsSidebarForceCloseFrameId !== null) {
+        window.cancelAnimationFrame(pendingDocsSidebarForceCloseFrameId);
+      }
+      // Let Overlay finish its delayed open bookkeeping before force-closing.
+      pendingDocsSidebarForceCloseFrameId = window.requestAnimationFrame(() => {
+        pendingDocsSidebarForceCloseFrameId = null;
+        forceCloseWhenDesktop();
+      });
+    };
+    const handleDesktopBreakpointChange = (
+      event: MediaQueryListEvent,
+    ): void => {
+      if (event.matches) {
+        forceCloseOpenDocsSidebar(docsSidebar);
+      }
+    };
+    desktopBreakpoint.addEventListener(
+      "change",
+      handleDesktopBreakpointChange,
+      { signal: controller.signal },
+    );
+    docsSidebar.addEventListener(
+      "open.hs.overlay",
+      scheduleForceCloseWhenDesktop,
+      { signal: controller.signal },
+    );
+    forceCloseWhenDesktop();
   }
 
   function initializeMotionAnimations() {
@@ -124,11 +185,13 @@
     initializePreline();
     if (behaviorInitialized) return;
     behaviorInitialized = true;
+    initializeDocsSidebarBreakpointWatcher();
     initializeMotionAnimations();
     initializeHorizontalScroll();
   }
 
   function teardownGlobalBehavior() {
+    teardownDocsSidebarBreakpointWatcher();
     motionObserverCleanups.forEach((cleanup) => cleanup());
     motionObserverCleanups.length = 0;
     horizontalScrollCleanups.forEach((cleanup) => cleanup());
