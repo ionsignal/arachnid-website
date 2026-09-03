@@ -1,14 +1,17 @@
 ---
 import type { NavigationLink } from "@/types";
-import { formatUrl } from "@/utils/core";
+import { resolveLinkAttributes } from "@/utils/core";
 import LucideIcon from "@/components/helpers/LucideIcon.astro";
 
 interface Props {
   menu: NavigationLink;
+  menuId: string;
 }
 
-const { menu } = Astro.props;
+const { menu, menuId } = Astro.props;
 const { pathname } = Astro.url;
+const dropdownToggleId = `${menuId}-toggle`;
+const dropdownMenuId = `${menuId}-menu`;
 
 const isUrlActive = (url?: string) =>
   url ? pathname === `${url}/` || pathname === url : false;
@@ -17,15 +20,6 @@ const isChildActive = (item: NavigationLink) =>
   item.menus?.some((child) => isUrlActive(child.url)) || false;
 
 const isActive = isUrlActive(menu.url) || isChildActive(menu);
-
-const getLinkAttributes = (url?: string, rel?: string, target?: string) => {
-  const isExternal = url?.startsWith("http") ?? false;
-  return {
-    rel: isExternal ? rel || "noopener noreferrer" : rel || undefined,
-    target: isExternal ? target || "_blank" : target || undefined,
-    href: formatUrl(url || Astro.url.origin),
-  };
-};
 ---
 
 {
@@ -34,11 +28,13 @@ const getLinkAttributes = (url?: string, rel?: string, target?: string) => {
       {menu.menus && menu.menus.length > 0 ? (
         <li class="hs-dropdown nav-item [--adaptive:none] [--strategy:static] lg:[--strategy:absolute]">
           <button
+            id={dropdownToggleId}
             type="button"
             aria-haspopup="menu"
             aria-expanded="false"
+            aria-controls={dropdownMenuId}
             class:list={[
-              "nav-link w-full justify-between gap-x-1",
+              "hs-dropdown-toggle nav-link w-full justify-between gap-x-1",
               { "nav-link-active": isActive },
             ]}>
             {menu.name}
@@ -49,7 +45,9 @@ const getLinkAttributes = (url?: string, rel?: string, target?: string) => {
             />
           </button>
           <div
+            id={dropdownMenuId}
             role="menu"
+            aria-labelledby={dropdownToggleId}
             class="hs-dropdown-menu hs-dropdown-open:opacity-100 top-full z-50 hidden w-full pt-2 opacity-0 before:absolute before:-top-4 before:left-0 before:h-4 before:w-full max-lg:transition-none lg:absolute lg:w-auto lg:pt-4 lg:transition-[opacity,margin] lg:duration-150">
             <div class="bg-theme-dark mx-2 p-2 shadow-2xl lg:mx-0 lg:rounded-2xl lg:p-2.5">
               {menu.hasMegaMenu ? (
@@ -58,7 +56,7 @@ const getLinkAttributes = (url?: string, rel?: string, target?: string) => {
                     {menu.menus.map((child) => (
                       <a
                         role="menuitem"
-                        {...getLinkAttributes(
+                        {...resolveLinkAttributes(
                           child.url,
                           child.rel,
                           child.target,
@@ -105,7 +103,7 @@ const getLinkAttributes = (url?: string, rel?: string, target?: string) => {
                     <li>
                       <a
                         role="menuitem"
-                        {...getLinkAttributes(
+                        {...resolveLinkAttributes(
                           child.url,
                           child.rel,
                           child.target,
@@ -130,7 +128,7 @@ const getLinkAttributes = (url?: string, rel?: string, target?: string) => {
       ) : (
         <li class="nav-item" role="menuitem">
           <a
-            {...getLinkAttributes(menu.url, menu.rel, menu.target)}
+            {...resolveLinkAttributes(menu.url, menu.rel, menu.target)}
             class:list={["nav-link", { "nav-link-active": isActive }]}>
             {menu.badge && menu.badge.enable ? (
               menu.badge.type === "dot" ? (

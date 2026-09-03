@@ -1,0 +1,102 @@
+/* Shared Logo */
+.logo-wrapper {
+  @apply flex items-center gap-1.5;
+
+  .logo {
+    @apply h-6 w-6 shrink-0;
+  }
+
+  &.has-hover-animation {
+    .logo {
+      @apply transform transition duration-300 ease-in;
+    }
+
+    &:hover .logo {
+      @apply animate-spin;
+    }
+  }
+}
+
+/* Site Header */
+[data-site-header] {
+  @apply border-primary/12 bg-body/50 relative z-30 w-full border-b backdrop-blur-xl;
+
+  &:has(#nav-menu.open) {
+    @apply bg-body;
+  }
+
+  &.sticky-header {
+    @apply sticky top-0 z-50;
+  }
+
+  .header-nav {
+    @apply relative;
+  }
+
+  #nav-menu {
+    @apply bg-body;
+  }
+
+  .header-nav-row {
+    @apply flex min-h-16 items-center justify-between gap-2 py-2;
+  }
+
+  .hs-dropdown-menu.mega-menu {
+    @apply pointer-events-auto;
+  }
+
+  .navbar {
+    @apply mx-auto flex max-lg:w-full max-lg:flex-col max-lg:space-y-1 max-lg:px-4 max-lg:py-3 lg:relative lg:ml-auto lg:flex! lg:items-center lg:bg-transparent;
+
+    .nav-item {
+      > .nav-link {
+        @apply lg:hover:bg-primary/5 relative flex items-center rounded-full px-4 py-1.5 text-sm text-white/75 transition-all duration-300 lg:py-2 xl:px-6;
+
+        &.nav-link-active,
+        .hs-collapse-toggle.active {
+          @apply bg-primary/10 text-white;
+        }
+      }
+    }
+
+    .badge {
+      @apply relative inline-block;
+
+      &:not(.badge-dot) {
+        @apply relative ml-2 inline-block rounded-full px-2 py-px text-[10px] font-medium;
+      }
+
+      &.badge-dot {
+        @apply absolute top-1 -right-3 h-1.5 w-1.5 rounded-full lg:-top-1;
+      }
+
+      &.badge-primary {
+        @apply bg-primary text-white;
+
+        &.badge-dot {
+          @apply bg-blue-400;
+        }
+      }
+
+      &.badge-info {
+        @apply text-dark bg-gray-200;
+      }
+
+      &.badge-success {
+        @apply bg-green-700 text-green-100;
+
+        &.badge-dot {
+          @apply bg-green-400;
+        }
+      }
+
+      &.badge-danger {
+        @apply bg-red-600 text-red-100;
+
+        &.badge-dot {
+          @apply bg-red-600;
+        }
+      }
+    }
+  }
+}

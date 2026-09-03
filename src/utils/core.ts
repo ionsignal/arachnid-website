@@ -103,6 +103,27 @@ export const formatUrl = (url: string | undefined): string => {
 };
 
 /**
+ * Resolves shared anchor attributes for navigation and other site chrome.
+ * Configured values are preserved while absolute HTTP(S) links receive secure
+ * defaults when no explicit `rel` or `target` value is provided.
+ */
+export function resolveLinkAttributes(
+  url?: string,
+  rel?: string,
+  target?: string,
+) {
+  const normalizedUrl = url?.trim();
+  const isExternalHttpUrl = Boolean(
+    normalizedUrl && /^https?:\/\//i.test(normalizedUrl),
+  );
+  return {
+    href: normalizedUrl ? formatUrl(normalizedUrl) : undefined,
+    rel: isExternalHttpUrl ? rel || "noopener noreferrer" : rel || undefined,
+    target: isExternalHttpUrl ? target || "_blank" : target || undefined,
+  };
+}
+
+/**
  * Deep merges a source object into a target object using native APIs.
  */
 export function overrideObjects<T extends object>(

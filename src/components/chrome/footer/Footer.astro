@@ -1,16 +1,27 @@
 ---
 import config from ".astro/config.generated.json";
 import { markdownify } from "@/utils/text";
-import { splitProtectedText, useTranslations, formatUrl } from "@/utils/core";
+import {
+  filteredEnabled,
+  splitProtectedText,
+  useTranslations,
+} from "@/utils/core";
 import SocialComponent from "@/components/social/Social.astro";
 import Logo from "@/components/chrome/Logo.astro";
+import FooterLink from "@/components/chrome/footer/FooterLink.astro";
 import FooterSubscription from "@/components/chrome/footer/FooterSubscription.astro";
-import type { NavigationLink } from "@/types";
 
 const t = useTranslations();
 const footerDescription = t("footer.description");
 const copyrightText = t("footer.copyright");
 const copyrightParts = splitProtectedText(copyrightText);
+const quickLinksHeading = t("footer.quickLinks");
+const resourcesHeading = t("footer.resources");
+const legalHeading = t("footer.legal");
+const quickLinks = filteredEnabled(t("footerMenuQuickLink"));
+const resourceLinks = filteredEnabled(t("footerMenuResources"));
+const legalLinks = filteredEnabled(t("footerMenuLegal"));
+const footerLinks = filteredEnabled(t("footerMenu"));
 const { subscription } = config.settings;
 ---
 
@@ -40,74 +51,34 @@ const { subscription } = config.settings;
           class="col-span-2 mt-10 grid gap-y-10 md:grid-cols-3 xl:mt-0 xl:ml-5">
           <div class="md:border-l md:px-8 lg:px-8 xl:px-14">
             {
-              t("footer.quickLinks") && (
-                <h3
-                  class="text-h5 text-light mb-6"
-                  set:html={t("footer.quickLinks")}
-                />
+              quickLinksHeading && (
+                <h3 class="text-h5 text-light mb-6">{quickLinksHeading}</h3>
               )
             }
             <ul class="flex flex-col gap-y-1.5">
-              {
-                t("footerMenuQuickLink") &&
-                  t("footerMenuQuickLink").map((menu: NavigationLink) => (
-                    <li class="inline-block">
-                      <a
-                        class="inline-block py-px text-inherit opacity-90 duration-300 hover:text-white"
-                        href={formatUrl(menu.url || "")}>
-                        {menu.name}
-                      </a>
-                    </li>
-                  ))
-              }
+              {quickLinks.map((link) => <FooterLink link={link} />)}
             </ul>
           </div>
           <div class="col-span-2 md:border-l md:pl-8 lg:pl-8 xl:pl-14">
             <div class="grid gap-y-10 md:grid-cols-2">
               <div>
                 {
-                  t("footer.resources") && (
-                    <h3
-                      class="text-h5 text-light mb-6"
-                      set:html={t("footer.resources")}
-                    />
+                  resourcesHeading && (
+                    <h3 class="text-h5 text-light mb-6">{resourcesHeading}</h3>
                   )
                 }
                 <ul class="flex flex-col gap-2">
-                  {
-                    t("footerMenuResources").map((menu: NavigationLink) => (
-                      <li class="inline-block">
-                        <a
-                          class="inline-block py-px text-inherit opacity-90 duration-300 hover:text-white"
-                          href={formatUrl(menu.url || "")}
-                          set:html={menu.name}
-                        />
-                      </li>
-                    ))
-                  }
+                  {resourceLinks.map((link) => <FooterLink link={link} />)}
                 </ul>
               </div>
               <div class="md:border-l md:pl-8 lg:pl-8 xl:pl-14">
                 {
-                  t("footer.legal") && (
-                    <h3
-                      class="text-h5 text-light mb-6"
-                      set:html={t("footer.legal")}
-                    />
+                  legalHeading && (
+                    <h3 class="text-h5 text-light mb-6">{legalHeading}</h3>
                   )
                 }
                 <ul class="flex flex-col gap-2">
-                  {
-                    t("footerMenuLegal").map((menu: NavigationLink) => (
-                      <li class="inline-block">
-                        <a
-                          class="inline-block py-px text-inherit opacity-90 duration-300 hover:text-white"
-                          href={formatUrl(menu.url || "")}
-                          set:html={menu.name}
-                        />
-                      </li>
-                    ))
-                  }
+                  {legalLinks.map((link) => <FooterLink link={link} />)}
                 </ul>
               </div>
             </div>
@@ -131,17 +102,7 @@ const { subscription } = config.settings;
         <div class="flex flex-wrap justify-between gap-x-8 gap-y-6">
           <ul
             class="has-list has-list-dot flex flex-wrap gap-y-2 md:flex-nowrap">
-            {
-              t("footerMenu").map((menu: NavigationLink) => (
-                <li class="inline-block">
-                  <a
-                    class="inline-block py-px text-inherit opacity-90 duration-300 hover:text-white"
-                    href={formatUrl(menu.url || "")}
-                    set:html={menu.name}
-                  />
-                </li>
-              ))
-            }
+            {footerLinks.map((link) => <FooterLink link={link} />)}
           </ul>
           {
             config.settings.copyright.enable && (
@@ -159,11 +120,3 @@ const { subscription } = config.settings;
     </div>
   </div>
 </footer>
-
-<script>
-  const footer = document.querySelector<HTMLElement>("[data-site-footer]");
-  const callToAction = document.querySelector(".cta-section");
-  if (footer && !callToAction) {
-    footer.classList.add("has-call-to-action");
-  }
-</script>

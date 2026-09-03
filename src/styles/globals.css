@@ -30,7 +30,7 @@
 
 @layer components {
   @import "./animation.css";
-  @import "./navigation.css";
+  @import "./chrome.css";
   @import "./components.css";
   @import "./docs.css";
   @import "./shortcodes.css";

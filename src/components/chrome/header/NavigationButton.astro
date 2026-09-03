@@ -1,5 +1,5 @@
 ---
-import { formatUrl } from "@/utils/core";
+import { resolveLinkAttributes } from "@/utils/core";
 
 interface NavigationButtonData {
   url?: string;
@@ -13,21 +13,16 @@ interface Props {
 }
 
 const { navigationButton, label } = Astro.props;
-const isExternal = navigationButton.url?.startsWith("http") ?? false;
-const rel = isExternal
-  ? navigationButton.rel || "noopener noreferrer"
-  : navigationButton.rel || undefined;
-const target = isExternal
-  ? navigationButton.target || "_blank"
-  : navigationButton.target || undefined;
+const linkAttributes = resolveLinkAttributes(
+  navigationButton.url,
+  navigationButton.rel,
+  navigationButton.target,
+);
 ---
 
 <a
-  rel={rel}
-  target={target}
-  class="relative flex items-center"
-  href={formatUrl(navigationButton.url)}>
-  <span class="btn btn-primary has-text-flip-animation" data-content={label}>
-    {label}
-  </span>
+  {...linkAttributes}
+  data-content={label}
+  class="btn btn-primary has-text-flip-animation relative inline-flex items-center">
+  {label}
 </a>

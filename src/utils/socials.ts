@@ -1,7 +1,7 @@
 import config from ".astro/config.generated.json";
 import type { SocialLink } from "@/types";
 
-const HEADER_PLATFORMS = ["github", "discord"] as const;
+const HEADER_PLATFORMS = ["github", "discord", "twitter"] as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;

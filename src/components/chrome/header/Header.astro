@@ -9,36 +9,42 @@ import { useTranslations, sortByWeight, filteredEnabled } from "@/utils/core";
 import { headerSocials } from "@/utils/socials";
 
 const t = useTranslations();
-const main = sortByWeight(filteredEnabled(t("main")));
+const navigationItems = sortByWeight(filteredEnabled(t("main")));
 const {
   site: { logoHoverAnimation },
-  settings: { stickyHeader, navigationButton },
+  settings: { stickyHeader, headerDemoButton },
 } = config;
+const showHeaderDemoButton =
+  headerDemoButton.enable && Boolean(headerDemoButton.url.trim());
 ---
 
 <header
-  class:list={[
-    "header group/header mt-5 transform",
-    { "sticky-header": stickyHeader },
-  ]}>
-  <div class="relative mx-auto w-full px-5 xl:container xl:px-4">
-    <nav
-      class="bg-theme-dark/80 relative flex items-center justify-between gap-2 py-2.5 ps-3 pe-2 backdrop-blur-md max-lg:rounded-none lg:rounded-full">
+  data-site-header
+  class:list={["header group/header", { "sticky-header": stickyHeader }]}>
+  <nav class="header-nav" aria-label="Primary navigation">
+    <div class="header-nav-row container">
       <Logo
         class={logoHoverAnimation ? "has-hover-animation" : ""}
         loading="eager"
       />
       <div
         id="nav-menu"
-        class="hs-collapse hidden grow basis-full overflow-hidden transition-all duration-300 max-lg:absolute max-lg:top-full max-lg:left-0 max-lg:z-40 max-lg:w-full lg:block lg:w-auto lg:basis-auto lg:overflow-visible">
+        class="hs-collapse hidden grow basis-full overflow-hidden transition-[height] duration-300 max-lg:absolute max-lg:inset-x-0 max-lg:top-full max-lg:z-40 max-lg:w-full max-lg:shadow-2xl lg:block lg:w-auto lg:basis-auto lg:overflow-visible">
         <ul class="navbar has-customized-scrollbar">
-          {main.map((menu) => <NavMenuItem menu={menu} />)}
           {
-            navigationButton.enable && (
+            navigationItems.map((menu, index) => (
+              <NavMenuItem
+                menu={menu}
+                menuId={`site-navigation-item-${index + 1}`}
+              />
+            ))
+          }
+          {
+            showHeaderDemoButton && (
               <li class="max-lg:px-4 max-lg:py-2 lg:hidden" role="menuitem">
                 <NavigationButton
-                  navigationButton={navigationButton}
-                  label={t("navigation.buttonLabel")}
+                  navigationButton={headerDemoButton}
+                  label={t("navigation.demoLabel")}
                 />
               </li>
             )
@@ -58,61 +64,75 @@ const {
         </ul>
       </div>
       {
-        (headerSocials.length > 0 || navigationButton.enable) && (
-          <div class="hidden items-center gap-2 max-lg:me-4 max-lg:ml-auto lg:flex">
+        (headerSocials.length > 0 || showHeaderDemoButton) && (
+          <div class="hidden items-center gap-2 lg:ml-auto lg:flex">
             <SocialChips
               links={headerSocials}
               class="gap-1"
               anchorClass="group text-text-default hover:text-light focus-visible:ring-primary/60 inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200 hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
               iconClass="h-[18px] w-[18px] transition-transform duration-200 group-hover:scale-110"
             />
-            {headerSocials.length > 0 && navigationButton.enable && (
+            {headerSocials.length > 0 && showHeaderDemoButton && (
               <span
                 class="mx-1 h-5 w-px self-center bg-white/10"
                 aria-hidden="true"
               />
             )}
-            {navigationButton.enable && (
+            {showHeaderDemoButton && (
               <NavigationButton
-                navigationButton={navigationButton}
-                label={t("navigation.buttonLabel")}
+                navigationButton={headerDemoButton}
+                label={t("navigation.demoLabel")}
               />
             )}
           </div>
         )
       }
       <NavigationToggleButton />
-    </nav>
-  </div>
+    </div>
+  </nav>
 </header>
 
 <script>
-  let navigationController: AbortController | null = null;
+  let headerNavigationController: AbortController | null = null;
 
   function initializeHeaderNavigation() {
-    navigationController?.abort();
-    navigationController = null;
-    const header = document.querySelector<HTMLElement>(".header");
-    if (!header) return;
+    headerNavigationController?.abort();
+    headerNavigationController = null;
+
+    const siteHeader =
+      document.querySelector<HTMLElement>("[data-site-header]");
+
+    if (!siteHeader) return;
+
     const controller = new AbortController();
-    navigationController = controller;
+    headerNavigationController = controller;
+
     document.addEventListener(
       "click",
       (event) => {
-        const target = event.target;
-        if (!(target instanceof Element)) return;
-        const navMenu = document.getElementById("nav-menu");
-        const navToggler =
-          document.querySelector<HTMLButtonElement>(".nav-toggler");
-        if (!navMenu?.classList.contains("open")) return;
-        const clickedLink = target.closest("a:not(.hs-dropdown-toggle)");
-        const clickedOutsideMenu =
-          !navMenu.contains(target) &&
-          (!navToggler || !navToggler.contains(target));
-        const clickedMenuLink =
-          navMenu.contains(target) && clickedLink !== null;
-        if (clickedOutsideMenu || clickedMenuLink) {
-          navToggler?.click();
+        const eventTarget = event.target;
+
+        if (!(eventTarget instanceof Element)) return;
+
+        const navigationMenu =
+          siteHeader.querySelector<HTMLElement>("#nav-menu");
+        const navigationToggle =
+          siteHeader.querySelector<HTMLButtonElement>(".nav-toggler");
+
+        if (!navigationMenu?.classList.contains("open")) return;
+
+        const selectedNavigationLink = eventTarget.closest(
+          "a:not(.hs-dropdown-toggle)",
+        );
+        const clickedOutsideNavigation =
+          !navigationMenu.contains(eventTarget) &&
+          (!navigationToggle || !navigationToggle.contains(eventTarget));
+        const selectedMenuLink =
+          navigationMenu.contains(eventTarget) &&
+          selectedNavigationLink !== null;
+
+        if (clickedOutsideNavigation || selectedMenuLink) {
+          navigationToggle?.click();
         }
       },
       { signal: controller.signal },
@@ -120,8 +140,8 @@ const {
   }
 
   function teardownHeaderNavigation() {
-    navigationController?.abort();
-    navigationController = null;
+    headerNavigationController?.abort();
+    headerNavigationController = null;
   }
 
   initializeHeaderNavigation();

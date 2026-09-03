@@ -1,4 +1,7 @@
 @theme {
+  /* Container */
+  --container-site: 1200px;
+
   /* Configure base font size, type scale, and font families in `src/config/fonts.json` */
   --leading-body: 1.8;
   --leading-inherit: inherit;

@@ -5,10 +5,6 @@
   @apply bg-[radial-gradient(50%_50%_at_50%_50%,--theme(--color-primary/30%)_0%,--theme(--color-primary/0%)_100%)] pointer-events-none absolute bottom-72 left-1/2 h-135 w-4/5 -translate-x-1/2 content-[''] md:rotate-[-20deg];
 }
 
-*[class*="container"] {
-  @apply mx-auto px-4;
-}
-
 .hero-description strong {
   overflow-wrap: anywhere;
   word-break: normal;
@@ -17,30 +13,6 @@
 /* Fit To Screen (Prevent Screen Flash ) */
 .fit-to-screen {
   @apply flex min-h-[102vh] flex-col justify-start;
-}
-
-/* Logo */
-.logo-wrapper {
-  @apply flex items-center gap-1;
-
-  .logo {
-    @apply w-10!;
-    @apply flex w-10 items-center gap-x-4;
-  }
-
-  &.has-hover-animation {
-    img {
-      @apply transform transition duration-300 ease-in;
-    }
-
-    &:hover img {
-      @apply animate-spin;
-    }
-  }
-
-  .logo-text {
-    @apply font-secondary text-[1.4rem] font-normal tracking-wider text-white;
-  }
 }
 
 /* Badge component */
@@ -52,30 +24,6 @@
 }
 .badge-arrow:hover::after {
   transform: translateX(3px);
-}
-
-/* Hide alternate logo */
-header {
-  .logo {
-    @apply inline-block;
-  }
-
-  .logo-alternate {
-    @apply hidden;
-  }
-}
-
-/* Show main logo in footer */
-footer {
-  .logo-wrapper {
-    .logo-text {
-      @apply text-h5 text-white;
-    }
-
-    &.logo-alternate {
-      @apply hidden;
-    }
-  }
 }
 
 .has-subtitle-text strong {
@@ -237,17 +185,6 @@ footer {
 [data-lucide] {
   width: 1em;
   height: 1em;
-}
-
-[data-icon]:not(.match-brand-color),
-.has-inherited-colors {
-  *[fill*="#"] {
-    fill: currentColor !important;
-  }
-
-  *[stroke*="#"] {
-    stroke: currentColor !important;
-  }
 }
 
 .comparison-section {

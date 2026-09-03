@@ -1,0 +1,23 @@
+---
+import { resolveLinkAttributes } from "@/utils/core";
+import type { NavigationLink } from "@/types";
+
+interface Props {
+  link: NavigationLink;
+  class?: string;
+}
+
+const { link, class: className } = Astro.props;
+const linkAttributes = resolveLinkAttributes(link.url, link.rel, link.target);
+---
+
+<li class="inline-block">
+  <a
+    {...linkAttributes}
+    class:list={[
+      "inline-block py-px text-inherit opacity-90 duration-300 hover:text-white",
+      className,
+    ]}>
+    {link.name}
+  </a>
+</li>

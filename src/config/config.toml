@@ -3,13 +3,11 @@
   title              = "Qiln"
   description        = "Qiln is a persistent visual-first AI workspace for ComfyUI, private model vaults, custom nodes, snapshots, routes, endpoints, and reserved high-VRAM GPU capacity."
   tagline            = "Persistent AI Workspaces"
-  taglineSeparator   = ""                   # default is " - " 
+  taglineSeparator   = ""                   # default is " - "
   baseUrl            = "https://qiln.com"   # Base URL for the site and used in OpenGraph meta tags.
   logo               = "/images/logo.svg"   # Path to the site's logo
   logoHoverAnimation = false                # Enable or disable logo hover animation
   logoText           = "Qiln"               # Text displayed next to the logo
-  logoWidth          = "32px"               # Width of the logo
-  logoHeight         = "32px"               # Height of the logo
 
   # Add a trailing slash at the end of URLs (e.g. https://qiln.com/)
   trailingSlash = true
@@ -58,7 +56,12 @@
       contentDir = "english"
       weight = 1
 
-  # Navigation Button In Header
+  # Demo Button In Header
+  [settings.headerDemoButton]
+    enable = false
+    url = ""
+
+  # Hero Subscription Button
   [settings.navigationButton]
     enable = true
     url = "#early-testers"

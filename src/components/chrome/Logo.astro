@@ -6,49 +6,37 @@ import config from ".astro/config.generated.json";
 import defaultLogo from "@/assets/images/logo.svg";
 import type { ImageMetadata } from "astro";
 
-const getNumber = (value: string) => {
-  if (!value) return 29;
-  const base = 16;
-  const updatedValue = value.replace("px", "").replace("rem", "");
-  let valueAsNumber = Number(updatedValue);
-  if (isNaN(valueAsNumber)) return 29;
-  if (value.includes("rem")) {
-    return (valueAsNumber = Number(updatedValue) * base);
-  }
-  return valueAsNumber;
-};
-
 interface Props {
   src?: ImageMetadata | string | null;
   class?: string;
   loading?: "eager" | "lazy";
 }
 
-let { src, class: className, loading } = Astro.props as Props;
-let {
-  logo,
-  logoWidth = "29px",
-  logoHeight = "29px",
-  logoText,
-  title,
-} = config.site;
+const { src, class: className, loading } = Astro.props as Props;
+const { logo, logoText, title } = config.site;
+const logoDimensions = {
+  width: 24,
+  height: 24,
+};
+const logoIconClass = "logo text-white";
+const logoTextClass =
+  "logo-text font-secondary text-[1.2rem] font-normal tracking-wider text-white";
+const logoAriaLabel = toSentenceCase("Brand logo of " + title);
+const logoSource = src ? src : logo ? logo : defaultLogo;
 
-const imgSource = src ? src : logo ? logo : defaultLogo;
 let rawSvgContent = "";
-if (typeof imgSource === "string" && imgSource.endsWith(".svg")) {
+if (typeof logoSource === "string" && logoSource.endsWith(".svg")) {
   const svgFiles = import.meta.glob("/src/assets/images/**/*.svg", {
     query: "?raw",
     import: "default",
   });
-  const cleanPath = imgSource.replace(/^\/?images\//, "");
-  const expectedPath = `/src/assets/images/${cleanPath}`;
-  if (expectedPath in svgFiles) {
-    let svgString = (await svgFiles[expectedPath]()) as string;
-    const svgClass = "logo text-white";
-    const svgStyle = `height: ${getNumber(logoHeight)}px; width: ${getNumber(logoWidth)}px;`;
-    rawSvgContent = svgString.replace(
+  const relativeLogoPath = logoSource.replace(/^\/?images\//, "");
+  const svgModulePath = `/src/assets/images/${relativeLogoPath}`;
+  if (svgModulePath in svgFiles) {
+    const rawSvg = (await svgFiles[svgModulePath]()) as string;
+    rawSvgContent = rawSvg.replace(
       /^<svg/,
-      `<svg class="${svgClass}" style="${svgStyle}" aria-label="${toSentenceCase("Brand logo of " + title)}"`,
+      `<svg class="${logoIconClass}" aria-label="${logoAriaLabel}"`,
     );
   }
 }
@@ -60,26 +48,22 @@ if (typeof imgSource === "string" && imgSource.endsWith(".svg")) {
       <>
         <Fragment set:html={rawSvgContent} />
         {logoText && (
-          <span class="logo-text" set:html={markdownify(logoText)} />
+          <span class={logoTextClass} set:html={markdownify(logoText)} />
         )}
       </>
-    ) : imgSource ? (
+    ) : logoSource ? (
       <>
         <Image
-          src={imgSource}
-          class="logo"
-          width={getNumber(logoWidth)}
-          height={getNumber(logoHeight)}
-          alt={toSentenceCase("Brand logo of " + title)}
+          src={logoSource}
+          class={logoIconClass}
+          width={logoDimensions.width}
+          height={logoDimensions.height}
+          alt={logoAriaLabel}
           loading={loading}
           decoding="async"
-          style={{
-            height: getNumber(logoHeight) + "px",
-            width: getNumber(logoWidth) + "px",
-          }}
         />
         {logoText && (
-          <span class="logo-text" set:html={markdownify(logoText)} />
+          <span class={logoTextClass} set:html={markdownify(logoText)} />
         )}
       </>
     ) : logoText ? (
