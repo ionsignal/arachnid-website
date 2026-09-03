@@ -64,6 +64,7 @@ export const collections = {
         subtitle: z.string().optional(),
         description: z.string().optional(),
         image: z.union([image(), z.string()]).optional(),
+        imageAlt: z.string().optional(),
         ratingContent: z.string().optional(),
         limit: z.union([z.boolean(), z.number()]).optional(),
         features: z.array(z.string()).optional(),

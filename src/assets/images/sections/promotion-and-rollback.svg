@@ -1,0 +1,462 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="960"
+  height="640"
+  viewBox="0 0 960 640"
+  fill="none"
+  role="img"
+  aria-labelledby="title description">
+  <title id="title">Approval-gated promotion and rollback</title>
+  <desc id="description">
+    An approved version 43 capsule is promoted to the generate route while
+    version 42 remains available as a known-good rollback target.
+  </desc>
+  <defs>
+    <linearGradient
+      id="promotion-line"
+      x1="390"
+      y1="316"
+      x2="742"
+      y2="316"
+      gradientUnits="userSpaceOnUse">
+      <stop stop-color="#33B1FF" />
+      <stop offset="1" stop-color="#34D399" />
+    </linearGradient>
+    <linearGradient
+      id="route-background"
+      x1="704"
+      y1="244"
+      x2="892"
+      y2="408"
+      gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10293A" />
+      <stop offset="1" stop-color="#08121E" />
+    </linearGradient>
+    <radialGradient
+      id="route-glow"
+      cx="0"
+      cy="0"
+      r="1"
+      gradientTransform="translate(730 322) rotate(90) scale(210 260)"
+      gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34D399" stop-opacity="0.18" />
+      <stop offset="1" stop-color="#34D399" stop-opacity="0" />
+    </radialGradient>
+    <filter
+      id="soft-glow"
+      x="-50%"
+      y="-50%"
+      width="200%"
+      height="200%"
+      color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="24" />
+    </filter>
+    <filter
+      id="card-shadow"
+      x="-30%"
+      y="-30%"
+      width="160%"
+      height="180%"
+      color-interpolation-filters="sRGB">
+      <feDropShadow
+        dx="0"
+        dy="18"
+        stdDeviation="18"
+        flood-color="#000000"
+        flood-opacity="0.3"
+      />
+    </filter>
+    <marker
+      id="promotion-arrow"
+      viewBox="0 0 8 8"
+      refX="7"
+      refY="4"
+      markerWidth="8"
+      markerHeight="8"
+      orient="auto">
+      <path d="M0 0L8 4L0 8Z" fill="#34D399" />
+    </marker>
+    <marker
+      id="rollback-arrow"
+      viewBox="0 0 8 8"
+      refX="7"
+      refY="4"
+      markerWidth="8"
+      markerHeight="8"
+      orient="auto">
+      <path d="M0 0L8 4L0 8Z" fill="#A0ABC0" />
+    </marker>
+  </defs>
+
+  <ellipse
+    cx="729"
+    cy="326"
+    rx="260"
+    ry="220"
+    fill="url(#route-glow)"
+    filter="url(#soft-glow)"
+  />
+
+  <text
+    x="68"
+    y="82"
+    fill="#33B1FF"
+    font-family="JetBrains Mono, monospace"
+    font-size="12"
+    font-weight="500"
+    letter-spacing="1.5">
+    APPROVAL MOVES ROUTES — NOT ARTIFACTS
+  </text>
+
+  <g filter="url(#card-shadow)">
+    <rect
+      x="70"
+      y="126"
+      width="262"
+      height="168"
+      rx="20"
+      fill="#0C1628"
+      stroke="#A0ABC0"
+      stroke-opacity="0.3"
+      stroke-width="2"
+    />
+    <rect
+      x="70"
+      y="362"
+      width="262"
+      height="168"
+      rx="20"
+      fill="#0C1628"
+      stroke="#33B1FF"
+      stroke-opacity="0.72"
+      stroke-width="2"
+    />
+  </g>
+
+  <g>
+    <text
+      x="96"
+      y="160"
+      fill="#A0ABC0"
+      font-family="JetBrains Mono, monospace"
+      font-size="11"
+      font-weight="500"
+      letter-spacing="1.1">
+      PRIOR VERSION
+    </text>
+    <text
+      x="96"
+      y="211"
+      fill="#F0F5FF"
+      font-family="Syne, Satoshi, Arial, sans-serif"
+      font-size="42"
+      font-weight="500">
+      Capsule v42
+    </text>
+    <rect
+      x="96"
+      y="232"
+      width="146"
+      height="32"
+      rx="16"
+      fill="#34D399"
+      fill-opacity="0.07"
+      stroke="#34D399"
+      stroke-opacity="0.48"
+    />
+    <circle cx="114" cy="248" r="7" fill="#34D399" fill-opacity="0.14" />
+    <path
+      d="M110.5 248L113 250.5L117.5 245.5"
+      stroke="#34D399"
+      stroke-width="1.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <text
+      x="128"
+      y="252"
+      fill="#34D399"
+      font-family="JetBrains Mono, monospace"
+      font-size="10"
+      font-weight="500">
+      KNOWN GOOD
+    </text>
+
+    <text
+      x="96"
+      y="396"
+      fill="#33B1FF"
+      font-family="JetBrains Mono, monospace"
+      font-size="11"
+      font-weight="500"
+      letter-spacing="1.1">
+      APPROVED CANDIDATE
+    </text>
+    <text
+      x="96"
+      y="447"
+      fill="#F0F5FF"
+      font-family="Syne, Satoshi, Arial, sans-serif"
+      font-size="42"
+      font-weight="500">
+      Capsule v43
+    </text>
+    <rect
+      x="96"
+      y="468"
+      width="118"
+      height="32"
+      rx="16"
+      fill="#33B1FF"
+      fill-opacity="0.08"
+      stroke="#33B1FF"
+      stroke-opacity="0.56"
+    />
+    <circle cx="114" cy="484" r="7" fill="#33B1FF" fill-opacity="0.14" />
+    <path
+      d="M110.5 484L113 486.5L117.5 481.5"
+      stroke="#33B1FF"
+      stroke-width="1.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <text
+      x="128"
+      y="488"
+      fill="#33B1FF"
+      font-family="JetBrains Mono, monospace"
+      font-size="10"
+      font-weight="500">
+      TESTED
+    </text>
+  </g>
+
+  <path
+    d="M332 446H402"
+    stroke="#33B1FF"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+
+  <g filter="url(#card-shadow)">
+    <rect
+      x="402"
+      y="365"
+      width="194"
+      height="162"
+      rx="20"
+      fill="#0C1628"
+      stroke="#33B1FF"
+      stroke-opacity="0.62"
+      stroke-width="2"
+    />
+  </g>
+  <g>
+    <rect
+      x="426"
+      y="389"
+      width="42"
+      height="42"
+      rx="10"
+      fill="#33B1FF"
+      fill-opacity="0.09"
+      stroke="#33B1FF"
+      stroke-opacity="0.5"
+    />
+    <path
+      d="M447 398L459 403V412C459 421 453 427 447 430C441 427 435 421 435 412V403L447 398Z"
+      stroke="#33B1FF"
+      stroke-width="2"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M441 413L445 417L453 408"
+      stroke="#33B1FF"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <text
+      x="482"
+      y="405"
+      fill="#33B1FF"
+      font-family="JetBrains Mono, monospace"
+      font-size="10"
+      font-weight="500"
+      letter-spacing="1">
+      GATE
+    </text>
+    <text
+      x="426"
+      y="463"
+      fill="#F0F5FF"
+      font-family="Syne, Satoshi, Arial, sans-serif"
+      font-size="22"
+      font-weight="500">
+      Approval
+    </text>
+    <text
+      x="426"
+      y="491"
+      fill="#A0ABC0"
+      font-family="Satoshi, Arial, sans-serif"
+      font-size="13">
+      Human or policy
+    </text>
+  </g>
+
+  <path
+    d="M596 446H648V322H708"
+    stroke="url(#promotion-line)"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    marker-end="url(#promotion-arrow)"
+  />
+  <g>
+    <rect
+      x="618"
+      y="348"
+      width="94"
+      height="28"
+      rx="14"
+      fill="#0C1221"
+      stroke="#34D399"
+      stroke-opacity="0.52"
+    />
+    <text
+      x="665"
+      y="366"
+      fill="#34D399"
+      font-family="JetBrains Mono, monospace"
+      font-size="10"
+      font-weight="500"
+      text-anchor="middle">
+      PROMOTE
+    </text>
+  </g>
+
+  <g filter="url(#card-shadow)">
+    <rect
+      x="710"
+      y="232"
+      width="182"
+      height="180"
+      rx="22"
+      fill="url(#route-background)"
+      stroke="#34D399"
+      stroke-opacity="0.76"
+      stroke-width="2"
+    />
+  </g>
+  <g>
+    <rect
+      x="736"
+      y="258"
+      width="44"
+      height="44"
+      rx="10"
+      fill="#34D399"
+      fill-opacity="0.08"
+      stroke="#34D399"
+      stroke-opacity="0.54"
+    />
+    <path
+      d="M747 279L753 285L770 268"
+      stroke="#34D399"
+      stroke-width="2.4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <text
+      x="794"
+      y="275"
+      fill="#34D399"
+      font-family="JetBrains Mono, monospace"
+      font-size="10"
+      font-weight="500"
+      letter-spacing="1">
+      LIVE
+    </text>
+    <text
+      x="736"
+      y="333"
+      fill="#F0F5FF"
+      font-family="Syne, Satoshi, Arial, sans-serif"
+      font-size="23"
+      font-weight="500">
+      Stable route
+    </text>
+    <path d="M736 352H866" stroke="#34D399" stroke-opacity="0.22" />
+    <text
+      x="736"
+      y="384"
+      fill="#F0F5FF"
+      font-family="JetBrains Mono, monospace"
+      font-size="13"
+      font-weight="500">
+      /generate
+    </text>
+    <text
+      x="826"
+      y="384"
+      fill="#34D399"
+      font-family="JetBrains Mono, monospace"
+      font-size="13"
+      font-weight="500">
+      v43
+    </text>
+  </g>
+
+  <path
+    d="M802 232V170H460C380 170 352 182 332 205"
+    stroke="#A0ABC0"
+    stroke-opacity="0.62"
+    stroke-width="2"
+    stroke-dasharray="6 8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    marker-end="url(#rollback-arrow)"
+  />
+  <g>
+    <rect
+      x="530"
+      y="151"
+      width="146"
+      height="32"
+      rx="16"
+      fill="#0C1221"
+      stroke="#A0ABC0"
+      stroke-opacity="0.34"
+    />
+    <text
+      x="603"
+      y="172"
+      fill="#A0ABC0"
+      font-family="JetBrains Mono, monospace"
+      font-size="10"
+      font-weight="500"
+      text-anchor="middle">
+      ROLLBACK TO v42
+    </text>
+  </g>
+
+  <path
+    d="M201 294V362"
+    stroke="#A0ABC0"
+    stroke-opacity="0.24"
+    stroke-width="1.5"
+    stroke-dasharray="4 7"
+  />
+
+  <text
+    x="70"
+    y="570"
+    fill="#34D399"
+    font-family="JetBrains Mono, monospace"
+    font-size="12"
+    font-weight="500"
+    letter-spacing="1.4">
+    MOVE THE ROUTE FORWARD · KEEP THE LAST KNOWN-GOOD VERSION
+  </text>
+</svg>

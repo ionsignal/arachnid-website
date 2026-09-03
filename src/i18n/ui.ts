@@ -4,79 +4,43 @@ const main: NavigationLink[] = [
   {
     enable: true,
     name: "Product",
-    weight: 3,
+    weight: 1,
     hasMegaMenu: false,
     menus: [
       {
         enable: true,
-        name: "What Qiln Protects",
+        name: "Known-good Snapshots",
         weight: 1,
-        url: "/#gpu",
+        url: "/#known-good-snapshots",
       },
       {
         enable: true,
-        name: "Agent-Safe Branches",
+        name: "Forked Branches",
         weight: 2,
-        url: "/#storage",
+        url: "/#forked-branches",
       },
       {
         enable: true,
-        name: "Qiln Blueprints",
+        name: "Capsule Diffs + Golden Tests",
         weight: 3,
-        url: "/#blueprint-section",
+        url: "/#golden-tests-and-diffs",
+      },
+      {
+        enable: true,
+        name: "Promotion + Rollback",
+        weight: 4,
+        url: "/#promotion-and-rollback",
       },
       {
         enable: true,
         name: "Qiln FAQ",
-        weight: 4,
+        weight: 5,
         url: "/#faq",
       },
     ],
   },
-  { enable: true, name: "Blog", weight: 3, url: "/blog" },
+  { enable: true, name: "Blog", weight: 2, url: "/blog" },
   { enable: true, name: "Documentation", weight: 3, url: "/docs" },
-  /*
-  {
-    enable: true,
-    name: "Product",
-    weight: 2,
-    hasMegaMenu: true,
-    menus: [
-      {
-        enable: true,
-        name: "Workspaces",
-        description: "Persistent visual AI workspaces on reserved GPUs.",
-        icon: "Monitor",
-        url: "/#gpu",
-      },
-      {
-        enable: true,
-        name: "Model Vaults",
-        description: "Secure, instant-access storage for your models.",
-        icon: "Database",
-        url: "/#storage",
-      },
-      {
-        enable: true,
-        name: "Blueprints",
-        description: "Pre-configured generative AI creation workflows.",
-        icon: "Workflow",
-        url: "/#blueprint-section",
-      },
-    ],
-    cta: {
-      enable: true,
-      title: "Start Building",
-      description: "Get access to high-VRAM GPUs today.",
-      image: "",
-      ctaBtn: {
-        enable: true,
-        label: "Request Access",
-        url: "/#early-testers",
-      },
-    },
-  },
-   */
 ];
 
 const footerMenu: NavigationLink[] = [];
