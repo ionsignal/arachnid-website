@@ -13,6 +13,5 @@ features:
   - "Point the production route alias at the approved capsule version."
   - "Keep the last known-good version available for rollback."
   - "Treat completed external side effects as non-reversible."
-image: "../../assets/images/sections/promotion-and-rollback.svg"
 imageAlt: "An approved version 43 capsule is promoted to the generate route while version 42 remains available as a known-good rollback target."
 ---

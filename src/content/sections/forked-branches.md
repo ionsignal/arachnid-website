@@ -12,6 +12,5 @@ features:
   - "Humans and agents edit the branch only, never production."
   - "Use scoped credentials with no production secret references."
   - "Control external side effects in the branch."
-image: "../../assets/images/sections/forked-branches.svg"
-imageAlt: "A known-good version 42 capsule remains connected to production while a human and an agent edit an isolated version 43 fork."
+imageAlt: "A known-good capsule remains connected to a stable production route while humans and agents edit an isolated fork."
 ---

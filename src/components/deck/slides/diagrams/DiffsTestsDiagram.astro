@@ -1,0 +1,513 @@
+---
+import DeckIcon from "@/components/deck/DeckIcon.astro";
+import LucideIcon from "@/components/helpers/LucideIcon.astro";
+
+interface Props {
+  label: string;
+  description: string;
+}
+
+const { label, description } = Astro.props;
+
+const capsuleChanges = [
+  {
+    symbol: "+",
+    label: "model: flux-v2",
+    kind: "added",
+  },
+  {
+    symbol: "−",
+    label: "model: flux-v1",
+    kind: "removed",
+  },
+  {
+    symbol: "~",
+    label: "runtime: CUDA 12.4",
+    kind: "changed",
+  },
+  {
+    symbol: "~",
+    label: "route schema",
+    kind: "changed",
+  },
+  {
+    symbol: "~",
+    label: "side-effect policy",
+    kind: "changed",
+  },
+] as const;
+
+const testEvidence = [
+  "Output accepted",
+  "Policy passed",
+  "Evidence saved",
+] as const;
+---
+
+<div
+  class="diffs-tests-diagram mx-auto w-full"
+  role="img"
+  aria-label={`${label}. ${description}`}>
+  <div class="diffs-tests-stage" aria-hidden="true">
+    <div class="source-capsules">
+      <article class="source-card source-card-known-good">
+        <span class="source-kicker">KNOWN GOOD</span>
+        <code>v42</code>
+        <small>approved capsule</small>
+      </article>
+      <article class="source-card source-card-candidate">
+        <span class="source-kicker">CANDIDATE</span>
+        <code>v43</code>
+        <small>isolated branch</small>
+      </article>
+    </div>
+    <div class="diff-flow-link diff-flow-link-review">
+      <LucideIcon
+        icon="ArrowDown"
+        class="diff-flow-arrow"
+        aria-hidden="true"
+        stroke-width="1.75"
+      />
+    </div>
+    <article class="diff-card">
+      <header class="diff-header">
+        <DeckIcon icon="FileDiff" class="diff-icon" />
+        <div>
+          <span>CAPSULE DIFF</span>
+          <strong>Inspect the change</strong>
+        </div>
+      </header>
+      <ul class="change-list">
+        {
+          capsuleChanges.map((change) => (
+            <li data-change-kind={change.kind}>
+              <span class="change-symbol">{change.symbol}</span>
+              <code>{change.label}</code>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="status-pill status-pill--reviewed">
+        <LucideIcon
+          icon="Check"
+          class="status-pill-icon"
+          aria-hidden="true"
+          stroke-width="2.25"
+        />
+        <strong>REVIEWED</strong>
+      </div>
+    </article>
+    <div class="diff-flow-link diff-flow-link-test">
+      <LucideIcon
+        icon="ArrowDown"
+        class="diff-flow-arrow"
+        aria-hidden="true"
+        stroke-width="1.75"
+      />
+    </div>
+    <article class="test-card">
+      <header class="test-header">
+        <DeckIcon icon="FlaskConical" color="secondary" class="test-icon" />
+        <div>
+          <span>GOLDEN TEST</span>
+          <strong>Known input</strong>
+        </div>
+      </header>
+      <ul class="test-evidence-list">
+        {
+          testEvidence.map((evidence) => (
+            <li>
+              <span>
+                <LucideIcon icon="Check" class="h-3 w-3" stroke-width="2" />
+              </span>
+              {evidence}
+            </li>
+          ))
+        }
+      </ul>
+      <div class="status-pill status-pill--pass">
+        <LucideIcon
+          icon="Check"
+          class="status-pill-icon"
+          aria-hidden="true"
+          stroke-width="2.25"
+        />
+        <strong>PASS</strong>
+      </div>
+    </article>
+  </div>
+  <p class="diffs-tests-caption" aria-hidden="true">
+    Diff first · test second · preserve the evidence
+  </p>
+</div>
+
+<style>
+  .diffs-tests-diagram {
+    max-width: 43rem;
+    container-type: inline-size;
+  }
+
+  .diffs-tests-stage {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem 0.25rem 0.5rem;
+  }
+
+  .diffs-tests-stage::before {
+    position: absolute;
+    z-index: -1;
+    inset: 9% 2%;
+    background:
+      radial-gradient(
+        circle at 48% 52%,
+        color-mix(in srgb, var(--color-primary) 14%, transparent),
+        transparent 48%
+      ),
+      radial-gradient(
+        circle at 84% 50%,
+        color-mix(in srgb, var(--color-secondary) 10%, transparent),
+        transparent 38%
+      );
+    filter: blur(20px);
+    content: "";
+  }
+
+  .source-capsules {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem;
+  }
+
+  .source-card {
+    display: grid;
+    min-width: 0;
+    gap: 0.4rem;
+    border: 1px solid color-mix(in srgb, var(--color-light) 20%, transparent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--color-theme-dark) 94%, transparent);
+    padding: 0.75rem;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.04),
+      0 12px 28px rgb(0 0 0 / 0.16);
+  }
+
+  .source-card-known-good {
+    border-color: color-mix(in srgb, var(--color-secondary) 48%, transparent);
+  }
+
+  .source-card-candidate {
+    border-color: color-mix(in srgb, var(--color-primary) 58%, transparent);
+    border-style: dashed;
+  }
+
+  .source-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    line-height: 0.75rem;
+  }
+
+  .source-card-known-good .source-kicker {
+    color: var(--color-secondary);
+  }
+
+  .source-card-candidate .source-kicker {
+    color: var(--color-primary);
+  }
+
+  .source-card code {
+    color: var(--color-light);
+    font-family: var(--font-secondary);
+    font-size: 1.75rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .source-card small {
+    overflow-wrap: anywhere;
+    color: var(--color-text-default);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    line-height: 1.12rem;
+  }
+
+  .diff-flow-link {
+    display: grid;
+    height: 2.75rem;
+    place-items: center;
+  }
+
+  .diff-flow-link-review {
+    color: var(--color-primary);
+  }
+
+  .diff-flow-link-test {
+    color: var(--color-secondary);
+  }
+
+  .diff-flow-arrow {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .diff-card,
+  .test-card {
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 0.875rem;
+    background: color-mix(in srgb, var(--color-theme-dark) 95%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.05),
+      0 18px 38px rgb(0 0 0 / 0.2);
+  }
+
+  .diff-card {
+    border: 1.5px solid
+      color-mix(in srgb, var(--color-primary) 66%, transparent);
+  }
+
+  .diff-header,
+  .test-header {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem;
+  }
+
+  .diff-header {
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  .test-header {
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-secondary) 20%, transparent);
+  }
+
+  .diff-header > div,
+  .test-header > div {
+    display: grid;
+    min-width: 0;
+    gap: 0.15rem;
+  }
+
+  .diff-header span,
+  .test-header span {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    line-height: 0.75rem;
+  }
+
+  .diff-header span {
+    color: var(--color-primary);
+  }
+
+  .test-header span {
+    color: var(--color-secondary);
+  }
+
+  .diff-header strong,
+  .test-header strong {
+    overflow-wrap: anywhere;
+    color: var(--color-light);
+    font-family: var(--font-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1rem;
+  }
+
+  .diff-icon :global(.deck-icon-wrap),
+  .test-icon :global(.deck-icon-wrap) {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+  }
+
+  .diff-icon :global(.deck-icon-glyph),
+  .test-icon :global(.deck-icon-glyph) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .change-list {
+    display: grid;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0.75rem;
+    list-style: none;
+  }
+
+  .change-list li {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: 1rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid color-mix(in srgb, var(--change-color) 24%, transparent);
+    border-radius: 0.4rem;
+    background: color-mix(in srgb, var(--change-color) 5%, transparent);
+    padding: 0.4rem 0.5rem;
+    --change-color: var(--color-primary);
+  }
+
+  .change-list li[data-change-kind="added"] {
+    --change-color: var(--color-secondary);
+  }
+
+  .change-list li[data-change-kind="removed"] {
+    --change-color: rgb(248 113 113);
+  }
+
+  .change-symbol {
+    color: var(--change-color);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .change-list code {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: var(--color-light);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 0.7rem;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    box-sizing: border-box;
+
+    align-items: center;
+    justify-content: left;
+    gap: 0.5rem;
+    margin: 0 0.875rem 0.875rem;
+    border: 1.5px solid
+      color-mix(in srgb, var(--status-pill-color) 62%, transparent);
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--status-pill-color) 8%, transparent);
+    padding: 0.25rem 1rem 0.25rem 0.5rem;
+    color: var(--status-pill-color);
+    --status-pill-color: var(--color-primary);
+  }
+
+  .status-pill--pass {
+    --status-pill-color: var(--color-secondary);
+  }
+
+  .status-pill-icon {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+  }
+
+  .status-pill strong {
+    color: inherit;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1rem;
+  }
+
+  .test-card {
+    border: 1.5px solid
+      color-mix(in srgb, var(--color-secondary) 62%, transparent);
+  }
+
+  .test-evidence-list {
+    display: grid;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0.875rem;
+    color: var(--color-light);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1rem;
+    list-style: none;
+  }
+
+  .test-evidence-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .test-evidence-list li > span {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 1px solid var(--color-secondary);
+    border-radius: 9999px;
+    color: var(--color-secondary);
+    background: color-mix(in srgb, var(--color-secondary) 8%, transparent);
+  }
+
+  .diffs-tests-caption {
+    margin: 1rem 0 0;
+    color: var(--color-text-default);
+    font-family: var(--font-mono);
+    font-size: 0.575rem;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    line-height: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  @container (min-width: 38rem) {
+    .diffs-tests-stage {
+      grid-template-columns:
+        minmax(6.5rem, 0.72fr) 2.25rem minmax(12rem, 1.28fr) 2.25rem
+        minmax(9.5rem, 0.9fr);
+      align-items: center;
+      min-height: 25rem;
+      gap: 0;
+      padding: 1rem 0;
+    }
+
+    .source-capsules {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .source-card {
+      min-height: 6.75rem;
+      align-content: center;
+    }
+
+    .diff-flow-link {
+      width: 100%;
+      height: 100%;
+    }
+
+    .diff-flow-arrow {
+      transform: rotate(-90deg);
+    }
+
+    .diff-card {
+      min-height: 21.5rem;
+    }
+
+    .test-card {
+      min-height: 17rem;
+    }
+
+    .diffs-tests-caption {
+      margin-top: 0.25rem;
+    }
+  }
+</style>

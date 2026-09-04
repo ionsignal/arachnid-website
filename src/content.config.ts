@@ -67,6 +67,12 @@ export const collections = {
         imageAlt: z.string().optional(),
         ratingContent: z.string().optional(),
         limit: z.union([z.boolean(), z.number()]).optional(),
+        columns: z
+          .union([z.literal(1), z.literal(2), z.literal("1"), z.literal("2")])
+          .transform((columnCount) =>
+            columnCount === "1" ? 1 : columnCount === "2" ? 2 : columnCount,
+          )
+          .optional(),
         features: z.array(z.string()).optional(),
         subscription: z
           .object({

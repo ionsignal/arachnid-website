@@ -1,0 +1,489 @@
+---
+import DeckIcon from "@/components/deck/DeckIcon.astro";
+import LucideIcon from "@/components/helpers/LucideIcon.astro";
+
+interface Props {
+  label: string;
+  description: string;
+}
+
+const { label, description } = Astro.props;
+
+const capturedArtifacts = [
+  {
+    label: "Workflows",
+    detail: "Graphs + source",
+    icon: "Workflow",
+  },
+  {
+    label: "Models + assets",
+    detail: "Private state",
+    icon: "Database",
+  },
+  {
+    label: "Dependencies",
+    detail: "Runtime state",
+    icon: "Cpu",
+  },
+  {
+    label: "Routes + schemas",
+    detail: "Stable contracts",
+    icon: "Route",
+  },
+  {
+    label: "Tests + history",
+    detail: "Release evidence",
+    icon: "ClipboardCheck",
+  },
+] as const;
+
+const capsuleProperties = [
+  "Runnable state captured",
+  "Rollback metadata retained",
+  "Runtime starts on demand",
+] as const;
+---
+
+<div
+  class="known-good-diagram mx-auto w-full"
+  role="img"
+  aria-label={`${label}. ${description}`}>
+  <div class="known-good-stage" aria-hidden="true">
+    <ul class="artifact-list">
+      {
+        capturedArtifacts.map((artifact) => (
+          <li class="artifact-card">
+            <span class="artifact-icon">
+              <LucideIcon
+                icon={artifact.icon}
+                class="h-4 w-4"
+                stroke-width="1.5"
+              />
+            </span>
+            <span class="artifact-copy">
+              <strong>{artifact.label}</strong>
+              <span>{artifact.detail}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="artifact-connector">
+      <svg
+        class="artifact-connector-svg"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        focusable="false">
+        <g class="artifact-connector-desktop">
+          <line class="artifact-connector-line" x1="0" y1="10" x2="130" y2="16">
+          </line>
+          <line class="artifact-connector-line" x1="0" y1="30" x2="130" y2="34">
+          </line>
+          <line class="artifact-connector-line" x1="0" y1="50" x2="130" y2="50">
+          </line>
+          <line class="artifact-connector-line" x1="0" y1="70" x2="130" y2="66">
+          </line>
+          <line class="artifact-connector-line" x1="0" y1="90" x2="130" y2="84">
+          </line>
+        </g>
+      </svg>
+    </div>
+    <div class="capsule-zone">
+      <span class="capsule-layer capsule-layer-back"></span>
+      <span class="capsule-layer capsule-layer-middle"></span>
+      <article class="capsule-card">
+        <header class="capsule-header">
+          <DeckIcon icon="Layers3" class="capsule-icon" />
+          <span>CAPSULE</span>
+        </header>
+        <div class="capsule-body">
+          <div class="capsule-release">
+            <code>v42</code>
+            <span class="capsule-status">
+              <LucideIcon icon="Check" class="h-3.5 w-3.5" stroke-width="2" />
+              KNOWN GOOD
+            </span>
+          </div>
+          <ul class="capsule-property-list">
+            {
+              capsuleProperties.map((property) => (
+                <li>
+                  <span />
+                  {property}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <footer class="capsule-footer">
+          <span class="durable-icon">
+            <LucideIcon icon="Power" class="h-4 w-4" stroke-width="1.5" />
+          </span>
+          <span>
+            <strong>DURABLE</strong>
+            <small>Ready to run</small>
+          </span>
+        </footer>
+      </article>
+    </div>
+  </div>
+  <p class="known-good-caption" aria-hidden="true">
+    Capture the whole working system
+  </p>
+</div>
+
+<style>
+  .known-good-diagram {
+    max-width: 42rem;
+    container-type: inline-size;
+  }
+
+  .known-good-stage {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    gap: 0;
+    padding: 1rem 0.5rem 0.5rem;
+  }
+
+  .known-good-stage::before {
+    position: absolute;
+    z-index: -1;
+    inset: 10% 3%;
+    background: radial-gradient(
+      circle at 64% 54%,
+      color-mix(in srgb, var(--color-primary) 15%, transparent),
+      transparent 62%
+    );
+    filter: blur(20px);
+    content: "";
+  }
+
+  .artifact-list {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .artifact-card {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.625rem;
+    border: 1px solid color-mix(in srgb, var(--color-light) 18%, transparent);
+    border-radius: 0.625rem;
+    background: color-mix(in srgb, var(--color-theme-dark) 92%, transparent);
+    padding: 0.625rem;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.04),
+      0 8px 20px rgb(0 0 0 / 0.12);
+  }
+
+  .artifact-card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .artifact-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid color-mix(in srgb, var(--color-primary) 38%, transparent);
+    border-radius: 0.45rem;
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  }
+
+  .artifact-copy {
+    display: grid;
+    min-width: 0;
+    gap: 0.125rem;
+  }
+
+  .artifact-copy strong {
+    overflow-wrap: anywhere;
+    color: var(--color-light);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1rem;
+  }
+
+  .artifact-copy > span {
+    overflow-wrap: anywhere;
+    color: var(--color-text-default);
+    font-family: var(--font-mono);
+    font-size: 0.675rem;
+    font-weight: 500;
+    line-height: 0.9rem;
+  }
+
+  .artifact-connector {
+    height: 3rem;
+  }
+
+  .artifact-connector-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .artifact-connector-line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 1 5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .artifact-connector-desktop {
+    display: none;
+  }
+
+  .capsule-zone {
+    position: relative;
+    width: min(calc(100% - 1rem), 27rem);
+    margin: 0 auto;
+  }
+
+  .capsule-layer {
+    position: absolute;
+    inset: 0;
+    border: 1px solid color-mix(in srgb, var(--color-primary) 28%, transparent);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--color-primary) 3%, transparent);
+    pointer-events: none;
+  }
+
+  .capsule-layer-back {
+    transform: translate(0.6rem, -0.6rem);
+  }
+
+  .capsule-layer-middle {
+    border-color: color-mix(in srgb, var(--color-primary) 42%, transparent);
+    transform: translate(0.3rem, -0.3rem);
+  }
+
+  .capsule-card {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    border: 1.5px solid
+      color-mix(in srgb, var(--color-primary) 72%, transparent);
+    border-radius: 1rem;
+    background:
+      radial-gradient(
+        circle at 82% 30%,
+        color-mix(in srgb, var(--color-primary) 14%, transparent),
+        transparent 48%
+      ),
+      color-mix(in srgb, var(--color-theme-dark) 96%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.06),
+      0 22px 48px rgb(0 0 0 / 0.22);
+  }
+
+  .capsule-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-primary) 22%, transparent);
+    padding: 0.75rem 0.875rem;
+    color: var(--color-primary);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.12rem;
+    list-style: none;
+  }
+
+  .capsule-icon :global(.deck-icon-wrap) {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.45rem;
+  }
+
+  .capsule-icon :global(.deck-icon-glyph) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .capsule-body {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1rem;
+  }
+
+  .capsule-release {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .capsule-release code {
+    color: var(--color-light);
+    font-family: var(--font-secondary);
+    font-size: clamp(2.25rem, 10cqw, 3.5rem);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+  }
+
+  .capsule-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid
+      color-mix(in srgb, var(--color-secondary) 54%, transparent);
+    border-radius: 9999px;
+    padding: 0.35rem 0.55rem;
+    color: var(--color-secondary);
+    background: color-mix(in srgb, var(--color-secondary) 8%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.575rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  .capsule-property-list {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    color: var(--color-text-default);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.12rem;
+    list-style: none;
+  }
+
+  .capsule-property-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .capsule-property-list li > span {
+    flex: none;
+    width: 0.3rem;
+    height: 0.3rem;
+    margin-top: 0.3rem;
+    border-radius: 9999px;
+    background: var(--color-primary);
+  }
+
+  .capsule-footer {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.625rem;
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-secondary) 20%, transparent);
+    background: color-mix(in srgb, var(--color-secondary) 5%, transparent);
+    padding: 0.75rem 0.875rem;
+  }
+
+  .durable-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid
+      color-mix(in srgb, var(--color-secondary) 42%, transparent);
+    border-radius: 0.45rem;
+    color: var(--color-secondary);
+    background: color-mix(in srgb, var(--color-secondary) 7%, transparent);
+  }
+
+  .capsule-footer > span:last-child {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .capsule-footer strong {
+    color: var(--color-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.575rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+
+  .capsule-footer small {
+    color: var(--color-light);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .known-good-caption {
+    margin: 1rem 0 0;
+    color: var(--color-text-default);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    line-height: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  @container (min-width: 34rem) {
+    .known-good-stage {
+      grid-template-columns: minmax(0, 0.86fr) 3.5rem minmax(0, 1.14fr);
+      align-items: center;
+      min-height: 25rem;
+      padding: 1rem;
+    }
+
+    .artifact-list {
+      align-self: stretch;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: repeat(5, minmax(0, 1fr));
+      gap: 0.625rem;
+    }
+
+    .artifact-card:last-child {
+      grid-column: auto;
+    }
+
+    .artifact-connector {
+      align-self: stretch;
+      width: calc(100% + 0.75rem);
+      height: auto;
+    }
+
+    .artifact-connector-mobile {
+      display: none;
+    }
+
+    .artifact-connector-desktop {
+      display: inline;
+    }
+
+    .capsule-zone {
+      width: calc(100% - 0.75rem);
+      margin-left: 0.75rem;
+    }
+
+    .capsule-body {
+      padding: 1.125rem;
+    }
+
+    .known-good-caption {
+      margin-top: 0.25rem;
+    }
+  }
+</style>

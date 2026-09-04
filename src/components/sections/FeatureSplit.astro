@@ -5,11 +5,13 @@ import Image from "@/components/helpers/Image.astro";
 import LucideIcon from "@/components/helpers/LucideIcon.astro";
 import Subtitle from "@/components/ui/Subtitle.astro";
 import type { CollectionEntry } from "astro:content";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 
 type SectionData = CollectionEntry<"sections">["data"];
 
 type Props = {
   content?: SectionData;
+  diagram?: AstroComponentFactory;
   imagePosition?: "left" | "right";
   class?: string;
   id?: string;
@@ -24,17 +26,24 @@ const {
   title,
   subtitle,
   description,
+  columns = 1,
   features,
   image,
   imageAlt,
 } = actualContent;
 const {
+  diagram: Diagram,
   imagePosition = "right",
   class: className,
   id,
   hasBackground = false,
 } = Astro.props;
 const resolvedImageAlt = imageAlt?.trim() || plainify(title);
+const diagramLabel =
+  plainify(title) || plainify(subtitle) || "Section illustration";
+const diagramDescription =
+  resolvedImageAlt || plainify(description) || diagramLabel;
+const hasVisual = Boolean(Diagram || image);
 ---
 
 {
@@ -51,7 +60,7 @@ const resolvedImageAlt = imageAlt?.trim() || plainify(title);
       <div class="container py-16 lg:py-24">
         <div
           class:list={[
-            "grid grid-cols-1 gap-12 lg:items-center lg:gap-4",
+            "grid grid-cols-1 gap-12 lg:items-center",
             imagePosition === "left"
               ? "lg:grid-cols-[minmax(0,14fr)_minmax(0,11fr)]"
               : "lg:grid-cols-[minmax(0,11fr)_minmax(0,14fr)]",
@@ -68,26 +77,39 @@ const resolvedImageAlt = imageAlt?.trim() || plainify(title);
                   class:list={[
                     "has-subtitle-text capitalize",
                     "lg:text-h4 xl:text-h2",
+                    imagePosition === "left" && "lg:text-right",
                   ]}
                   set:html={markdownify(title)}
                 />
               )}
               {description && (
                 <p
-                  class="text-text-default text-lg leading-relaxed opacity-80"
+                  class:list={[
+                    "text-text-default mx-auto max-w-4xl text-base leading-relaxed md:text-lg",
+                    imagePosition === "left" && "lg:text-right",
+                  ]}
                   set:html={markdownify(description)}
                 />
               )}
               {features && features.length > 0 && (
-                <ul class="mt-2 flex flex-col gap-3">
+                <ul
+                  class:list={[
+                    "mt-2 gap-3",
+                    columns === 2 ? "grid grid-cols-2" : "flex flex-col",
+                    imagePosition === "left" && "lg:text-right",
+                  ]}>
                   {features.map((feature) => (
-                    <li class="flex items-start gap-3">
+                    <li
+                      class:list={[
+                        "flex min-w-0 items-start gap-3",
+                        imagePosition === "left" && "lg:flex-row-reverse",
+                      ]}>
                       <LucideIcon
                         icon="CheckCircle2"
                         class="text-primary mt-0.5 h-5 w-5 shrink-0"
                       />
                       <span
-                        class="text-sm text-white/70"
+                        class="min-w-0 text-sm text-white/70"
                         set:html={markdownify(feature)}
                       />
                     </li>
@@ -101,7 +123,7 @@ const resolvedImageAlt = imageAlt?.trim() || plainify(title);
               "motion-image relative opacity-0 will-change-transform",
               imagePosition === "left" ? "lg:order-1" : "lg:order-2",
             ]}>
-            {image && (
+            {hasVisual && (
               <>
                 <div
                   aria-hidden="true"
@@ -112,12 +134,25 @@ const resolvedImageAlt = imageAlt?.trim() || plainify(title);
                       : "-translate-x-8 translate-y-10 lg:-translate-x-16 lg:translate-y-16",
                   ]}
                 />
-                <div class="relative overflow-hidden">
-                  <Image
-                    src={image}
-                    alt={resolvedImageAlt}
-                    class="h-auto w-full"
-                  />
+                <div
+                  class:list={[
+                    "relative",
+                    Diagram ? "overflow-visible" : "overflow-hidden",
+                  ]}>
+                  {Diagram ? (
+                    <Diagram
+                      label={diagramLabel}
+                      description={diagramDescription}
+                    />
+                  ) : (
+                    image && (
+                      <Image
+                        src={image}
+                        alt={resolvedImageAlt}
+                        class="h-auto w-full"
+                      />
+                    )
+                  )}
                 </div>
               </>
             )}

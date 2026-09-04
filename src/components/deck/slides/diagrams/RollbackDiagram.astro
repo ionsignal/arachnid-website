@@ -1,0 +1,596 @@
+---
+import LucideIcon from "@/components/helpers/LucideIcon.astro";
+
+interface Props {
+  label: string;
+  description: string;
+}
+
+const { label, description } = Astro.props;
+const diagramSummary = `${label}. ${description}. Production is routed to approved version 15. Approval is required before promotion, and known-good version 14 remains available for rollback.`;
+---
+
+<div
+  class="rollback-diagram mx-auto w-full"
+  role="img"
+  aria-label={diagramSummary}>
+  <div class="rollback-stage" aria-hidden="true">
+    <svg
+      class="rollback-wide-connections"
+      viewBox="0 0 680 540"
+      preserveAspectRatio="none"
+      focusable="false">
+      <path
+        class="rollback-route-connection rollback-route-connection--active"
+        d="M340 76 V150 H132 V204"
+        vector-effect="non-scaling-stroke">
+      </path>
+      <path
+        class="rollback-route-connection rollback-route-connection--active"
+        d="M340 150 H548 V204"
+        vector-effect="non-scaling-stroke">
+      </path>
+      <path
+        class="rollback-connection"
+        d="M548 364 V432 H392"
+        vector-effect="non-scaling-stroke">
+      </path>
+      <path
+        class="rollback-connection"
+        d="M288 432 H132 V364"
+        vector-effect="non-scaling-stroke">
+      </path>
+      <path
+        class="rollback-arrowhead rollback-arrowhead--active"
+        d="M540 193 L548 204 L556 193"
+        vector-effect="non-scaling-stroke">
+      </path>
+      <path
+        class="rollback-arrowhead rollback-arrowhead--rollback"
+        d="M124 375 L132 364 L140 375"
+        vector-effect="non-scaling-stroke">
+      </path>
+    </svg>
+
+    <div class="rollback-production-card">
+      <p>Production</p>
+    </div>
+
+    <svg
+      class="rollback-compact-route-connection"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      focusable="false">
+      <path
+        class="rollback-route-connection rollback-route-connection--active"
+        d="M50 -2 V36 H25 V102"
+        vector-effect="non-scaling-stroke">
+      </path>
+      <path
+        class="rollback-route-connection rollback-route-connection--active"
+        d="M50 36 H75 V102"
+        vector-effect="non-scaling-stroke">
+      </path>
+      <path
+        class="rollback-arrowhead rollback-arrowhead--active"
+        d="M70 90 L75 100 L80 90"
+        vector-effect="non-scaling-stroke">
+      </path>
+    </svg>
+
+    <div class="rollback-state-cards">
+      <div class="rollback-state-card rollback-state-card--known-good">
+        <p class="rollback-state-label">KNOWN-GOOD</p>
+        <p class="rollback-state-version">v14</p>
+        <span class="rollback-state-divider"></span>
+        <LucideIcon
+          icon="CheckCircle2"
+          class="rollback-state-check"
+          aria-hidden="true"
+          stroke-width="1.75"
+        />
+      </div>
+
+      <div class="rollback-state-card rollback-state-card--approved">
+        <p class="rollback-state-label">APPROVED</p>
+        <p class="rollback-state-version">v15</p>
+        <span class="rollback-state-divider"></span>
+        <LucideIcon
+          icon="CheckCircle2"
+          class="rollback-state-check"
+          aria-hidden="true"
+          stroke-width="1.75"
+        />
+      </div>
+
+      <div class="rollback-approval">
+        <div class="rollback-approval-badge">
+          <LucideIcon
+            icon="ShieldCheck"
+            class="rollback-shield-icon"
+            aria-hidden="true"
+            stroke-width="1.5"
+          />
+        </div>
+        <p class="rollback-approval-text">
+          <span>Approval</span>
+          <span>required</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="rollback-return">
+      <svg
+        class="rollback-compact-return-connection"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        focusable="false">
+        <path
+          class="rollback-connection"
+          d="M75 -2 V42 H62"
+          vector-effect="non-scaling-stroke">
+        </path>
+        <path
+          class="rollback-connection"
+          d="M38 42 H25 V-2"
+          vector-effect="non-scaling-stroke">
+        </path>
+        <path
+          class="rollback-arrowhead rollback-arrowhead--rollback"
+          d="M20 9 L25 -1 L30 9"
+          vector-effect="non-scaling-stroke">
+        </path>
+      </svg>
+
+      <div class="rollback-return-content">
+        <LucideIcon
+          icon="RotateCcw"
+          class="rollback-return-icon"
+          aria-hidden="true"
+          stroke-width="1.75"
+        />
+        <div class="rollback-return-copy">
+          <p class="rollback-return-title">Rollback</p>
+          <p class="rollback-return-description">Available if needed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .rollback-diagram {
+    max-width: 44rem;
+    container-type: inline-size;
+    --rollback-accent: #a78bfa;
+    --rollback-accent-light: #c4b5fd;
+  }
+
+  .rollback-stage {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.75rem 0.25rem 0.5rem;
+  }
+
+  .rollback-stage::before {
+    position: absolute;
+    z-index: -1;
+    inset: 8% 3%;
+    background: transparent;
+    content: "";
+  }
+
+  .rollback-wide-connections {
+    display: none;
+  }
+
+  .rollback-production-card,
+  .rollback-state-card {
+    position: relative;
+    z-index: 1;
+  }
+
+  .rollback-production-card {
+    display: flex;
+    box-sizing: border-box;
+    width: min(100%, 14rem);
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    border: 1px solid color-mix(in srgb, #fff 36%, transparent);
+    border-radius: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--color-primary);
+  }
+
+  .rollback-production-card p {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-secondary);
+    font-size: clamp(1.25rem, 5cqw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1;
+  }
+
+  .rollback-compact-route-connection {
+    display: block;
+    width: 100%;
+    height: 4.5rem;
+    overflow: visible;
+    fill: none;
+    pointer-events: none;
+  }
+
+  .rollback-route-connection,
+  .rollback-connection,
+  .rollback-arrowhead {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .rollback-route-connection--active {
+    stroke: color-mix(in srgb, var(--color-primary) 90%, #fff);
+    stroke-width: 2px;
+  }
+
+  .rollback-connection {
+    stroke: color-mix(in srgb, var(--rollback-accent) 82%, transparent);
+    stroke-dasharray: 3 6;
+    stroke-width: 1.75px;
+  }
+
+  .rollback-arrowhead {
+    stroke-width: 2px;
+  }
+
+  .rollback-arrowhead--active {
+    stroke: var(--color-primary);
+  }
+
+  .rollback-arrowhead--rollback {
+    stroke: var(--rollback-accent);
+  }
+
+  .rollback-state-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem;
+  }
+
+  .rollback-state-card {
+    display: flex;
+    min-width: 0;
+    min-height: clamp(7rem, 24cqw, 8rem);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    padding: clamp(0.5rem, 1.5cqw, 0.75rem);
+    text-align: center;
+  }
+
+  .rollback-state-card--known-good {
+    border: 1px solid
+      color-mix(in srgb, var(--rollback-accent-light) 42%, transparent);
+    background: var(--color-theme-dark);
+  }
+
+  .rollback-state-card--approved {
+    border: 1px solid
+      color-mix(in srgb, var(--rollback-accent-light) 46%, transparent);
+    background: var(--color-theme-dark);
+  }
+
+  .rollback-state-label,
+  .rollback-state-version {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .rollback-state-label {
+    color: var(--rollback-accent-light);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.12rem;
+    list-style: none;
+  }
+
+  .rollback-state-card--approved .rollback-state-label {
+    color: var(--color-secondary);
+  }
+
+  .rollback-state-version {
+    margin-top: 0.25rem;
+    color: var(--color-light);
+    font-family: var(--font-secondary);
+    font-size: 1.75rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .rollback-state-divider {
+    width: 84%;
+    margin: clamp(0.45rem, 1.4cqw, 0.7rem) 0;
+    border-top: 1px solid
+      color-mix(in srgb, var(--rollback-accent-light) 24%, transparent);
+  }
+
+  .rollback-state-check {
+    width: clamp(1.5rem, 4.5cqw, 2rem);
+    height: clamp(1.5rem, 4.5cqw, 2rem);
+    color: var(--color-secondary);
+  }
+
+  .rollback-approval {
+    display: flex;
+    min-width: 0;
+    grid-column: 1 / -1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+    text-align: center;
+  }
+
+  .rollback-approval-badge {
+    position: relative;
+    display: grid;
+    width: clamp(4.25rem, 13cqw, 5.5rem);
+    aspect-ratio: 1;
+    place-items: center;
+    isolation: isolate;
+  }
+
+  .rollback-shield-icon {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    color: color-mix(in srgb, var(--color-secondary) 84%, #d9ffcd);
+  }
+
+  .rollback-approval-text {
+    margin: 0;
+    color: var(--color-secondary);
+    font-family: var(--font-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+  }
+
+  .rollback-approval-text span {
+    display: block;
+  }
+
+  .rollback-return {
+    position: relative;
+    display: flex;
+    min-height: 10rem;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.625rem;
+    text-align: center;
+  }
+
+  .rollback-compact-return-connection {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 4.5rem;
+    overflow: visible;
+    fill: none;
+    pointer-events: none;
+  }
+
+  .rollback-return-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rollback-return-icon {
+    display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--rollback-accent);
+  }
+
+  .rollback-return-copy {
+    margin-top: 0.875rem;
+  }
+
+  .rollback-return-title,
+  .rollback-return-description {
+    margin: 0;
+  }
+
+  .rollback-return-title {
+    color: var(--rollback-accent-light);
+    font-family: var(--font-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  .rollback-return-description {
+    margin-top: 0.25rem;
+    color: color-mix(in srgb, var(--rollback-accent-light) 86%, #fff);
+    font-size: 0.78rem;
+    line-height: 1.25;
+  }
+
+  @container (min-width: 34rem) {
+    .rollback-stage {
+      display: block;
+      width: 100%;
+      aspect-ratio: 680 / 540;
+      padding: 0;
+    }
+
+    .rollback-wide-connections {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      fill: none;
+      pointer-events: none;
+    }
+
+    .rollback-compact-route-connection,
+    .rollback-compact-return-connection {
+      display: none;
+    }
+
+    .rollback-production-card {
+      position: absolute;
+      top: 3.7%;
+      left: 50%;
+      width: min(28%, 14rem);
+      transform: translateX(-50%);
+    }
+
+    .rollback-production-card p {
+      font-size: 1rem;
+    }
+
+    .rollback-state-cards {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      display: block;
+    }
+
+    .rollback-state-card {
+      position: absolute;
+      top: 37.78%;
+      width: 29%;
+      min-height: 23.53cqw;
+    }
+
+    .rollback-state-card--known-good {
+      left: 5%;
+    }
+
+    .rollback-state-card--approved {
+      right: 5%;
+    }
+
+    .rollback-approval {
+      position: absolute;
+      top: 37%;
+      left: 50%;
+      width: 20%;
+      min-height: 0;
+      padding: 0;
+      transform: translateX(-50%);
+    }
+
+    .rollback-return {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      display: block;
+      min-height: 0;
+      padding: 0;
+    }
+
+    .rollback-return-content {
+      position: absolute;
+      top: 80%;
+      left: 50%;
+      min-width: 10rem;
+      transform: translateX(-50%);
+    }
+
+    .rollback-return-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      margin-top: -1.25rem;
+    }
+
+    .rollback-return-copy {
+      margin-top: 1rem;
+    }
+  }
+
+  @container (max-width: 25rem) {
+    .rollback-stage {
+      gap: 0.625rem;
+      padding-inline: 0;
+    }
+
+    .rollback-state-cards {
+      gap: 0.5rem;
+    }
+
+    .rollback-state-card {
+      min-height: 6.5rem;
+      border-radius: 0.625rem;
+      padding: 0.5rem;
+    }
+
+    .rollback-state-label {
+      font-size: 0.875rem;
+    }
+
+    .rollback-state-version {
+      font-size: 1.75rem;
+    }
+
+    .rollback-state-divider {
+      margin-block: 0.4rem;
+    }
+
+    .rollback-state-check {
+      width: 1.4rem;
+      height: 1.4rem;
+    }
+
+    .rollback-approval {
+      gap: 0.375rem;
+    }
+
+    .rollback-approval-badge {
+      width: 4rem;
+    }
+
+    .rollback-return {
+      min-height: 9.5rem;
+    }
+
+    .rollback-return-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    .rollback-return-copy {
+      margin-top: 0.75rem;
+    }
+
+    .rollback-return-title {
+      font-size: 1rem;
+    }
+
+    .rollback-return-description {
+      font-size: 0.8rem;
+    }
+
+    .rollback-route-label {
+      font-size: 1rem;
+    }
+  }
+</style>

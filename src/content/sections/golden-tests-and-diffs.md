@@ -13,6 +13,5 @@ features:
   - "Review changed models, assets, dependencies, routes, and schemas."
   - "Inspect credential references and side-effect policy."
   - "Run known inputs and preserve golden-test evidence."
-image: "../../assets/images/sections/diffs-golden-tests.svg"
 imageAlt: "A version 42 capsule is compared with a version 43 branch before the branch runs a golden test and produces passing release evidence."
 ---
